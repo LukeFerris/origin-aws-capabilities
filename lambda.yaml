@@ -30,27 +30,10 @@ HttpApi:
       Handler: index.handler
       Runtime: nodejs18.x
       Events:
-        HttpApiPOST:
-          Type: HttpApi
-          Properties:
-            Path: /path
-            Method: POST
-            ApiId: !Ref HttpApi
         HttpApiGET:
           Type: HttpApi
           Properties:
-            Path: /path
+            Path: /[CELL_ID]
             Method: GET
             ApiId: !Ref HttpApi
-        HttpApiGETSpecific:
-          Type: HttpApi
-          Properties:
-            Path: /path/{id}
-            Method: GET
-            ApiId: !Ref HttpApi
-        HttpApiDELETESpecific:
-          Type: HttpApi
-          Properties:
-            Path: /path/{id}
-            Method: DELETE
-            ApiId: !Ref HttpApi
+# Add additional events or edit this one as required
