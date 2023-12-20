@@ -1,0 +1,56 @@
+# Outputs for the lambda function
+Outputs:
+  [CELL_ID]_Lambda_Url:
+    Description: The HTTP API Gateway url for the created lambda
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
+
+# HTTP API to expose the lambda function to the internet with no authentication
+HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - "*"
+        ExposeHeaders:
+          - X-Total-Count
+      FailOnWarnings: true
+
+[CELL_ID]-Lambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-[CELL_ID]-Lambda
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: [CELL_ID]-Lambda
+      CodeUri: working/[CELL_ID]
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Events:
+        HttpApiPOST:
+          Type: HttpApi
+          Properties:
+            Path: /path
+            Method: POST
+            ApiId: !Ref HttpApi
+        HttpApiGET:
+          Type: HttpApi
+          Properties:
+            Path: /path
+            Method: GET
+            ApiId: !Ref HttpApi
+        HttpApiGETSpecific:
+          Type: HttpApi
+          Properties:
+            Path: /path/{id}
+            Method: GET
+            ApiId: !Ref HttpApi
+        HttpApiDELETESpecific:
+          Type: HttpApi
+          Properties:
+            Path: /path/{id}
+            Method: DELETE
+            ApiId: !Ref HttpApi
