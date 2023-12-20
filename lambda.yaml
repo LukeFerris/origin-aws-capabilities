@@ -1,6 +1,6 @@
 # Outputs for the lambda function
 Outputs:
-  [CELL_ID]_Lambda_Url:
+  [CELL_ID]_Url:
     Description: The HTTP API Gateway url for the created lambda
     Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
 
@@ -19,13 +19,13 @@ HttpApi:
           - X-Total-Count
       FailOnWarnings: true
 
-[CELL_ID]-Lambda:
+[CELL_ID]:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-[CELL_ID]-Lambda
+      FunctionName: !Sub ${AWS::StackName}-[CELL_ID]
       Description: !Sub
         - Stack ${AWS::StackName} Function ${ResourceName}
-        - ResourceName: [CELL_ID]-Lambda
+        - ResourceName: [CELL_ID]
       CodeUri: working/[CELL_ID]
       Handler: index.handler
       Runtime: nodejs18.x
