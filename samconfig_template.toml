@@ -1,3 +1,5 @@
+version = 0.1
+
 [o-[SOLUTION_ID_SHORT]]
 [o-[SOLUTION_ID_SHORT].deploy]
 [o-[SOLUTION_ID_SHORT].deploy.parameters]
