@@ -1,6 +1,6 @@
 # Outputs for the lambda function
 Outputs:
-  [CELL_ID]_Url:
+  [CELL_ID]Url:
     Description: The HTTP API Gateway url for the created lambda
     Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
 
