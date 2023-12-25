@@ -1,0 +1,10 @@
+[[SOLUTION_ID]]
+[[SOLUTION_ID].deploy]
+[[SOLUTION_ID].deploy.parameters]
+aws_account_number = "360520317360"
+stack_name = "[SOLUTION_ID]"
+s3_prefix = "[SOLUTION_ID]"
+region = "eu-central-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM"
+disable_rollback = false
