@@ -33,7 +33,7 @@ HttpApi:
         HttpApiGET:
           Type: HttpApi
           Properties:
-            Path: /[CELL_ID]
+            Path: /
             Method: GET
             ApiId: !Ref HttpApi
 # Add additional events or edit this one as required
