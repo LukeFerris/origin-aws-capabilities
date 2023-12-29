@@ -1,0 +1,92 @@
+# Outputs for the lambda function
+Outputs:
+  [CELL_ID]Url:
+    Description: The HTTP API Gateway url for the created lambda
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
+
+# HTTP API to expose the lambda function to the internet with no authentication
+HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - "*"
+        ExposeHeaders:
+          - X-Total-Count
+      FailOnWarnings: true
+
+[CELL_ID]Table:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      TableName: !Sub ${AWS::StackName}-[CELL_ID]]
+      AttributeDefinitions:
+        - AttributeName: "ExampleId"
+          AttributeType: "S"
+        - AttributeName: "ExampleSecondAttribute"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "ExampleId"
+          KeyType: "HASH"
+      GlobalSecondaryIndexes:
+        - IndexName: "ExampleSecondIndex"
+          KeySchema:
+            - AttributeName: "ExampleSecondAttribute"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+
+[CELL_ID]:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-[CELL_ID]
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: [CELL_ID]
+      CodeUri: ../../working/[CELL_ID]
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Events:
+        # Example HTTP methods
+        HttpApiGET:
+          Type: HttpApi
+          Properties:
+            Path: /[CELL_ID]/{id}
+            Method: GET
+            ApiId: !Ref HttpApi
+        HttpApiGETMultiple:
+          Type: HttpApi
+          Properties:
+            Path: /[CELL_ID]/
+            Method: GET
+            ApiId: !Ref HttpApi
+        HttpApiPUT:
+          Type: HttpApi
+          Properties:
+            Path: /[CELL_ID]/{id}
+            Method: PUT
+            ApiId: !Ref HttpApi
+        HttpApiPOST:
+          Type: HttpApi
+          Properties:
+            Path: /[CELL_ID]/
+            Method: POST
+            ApiId: !Ref HttpApi
+        HttpApiDELETE:
+          Type: HttpApi
+          Properties:
+            Path: /[CELL_ID]/{id}
+            Method: DELETE
+            ApiId: !Ref HttpApi
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref [CELL_ID]Table
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref [CELL_ID]Table
+
+# Add additional events or edit this one as required
