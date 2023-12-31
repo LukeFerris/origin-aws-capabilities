@@ -27,18 +27,10 @@ HttpApi:
       AttributeDefinitions:
         - AttributeName: "ExampleId"
           AttributeType: "S"
-        - AttributeName: "ExampleSecondAttribute"
-          AttributeType: "S"
+      ## NB. All attributes mentioned in the attribute definitions must be included in the key schema
       KeySchema:
         - AttributeName: "ExampleId"
           KeyType: "HASH"
-      GlobalSecondaryIndexes:
-        - IndexName: "ExampleSecondIndex"
-          KeySchema:
-            - AttributeName: "ExampleSecondAttribute"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "ALL"
 
 [CELL_ID]:
     Type: AWS::Serverless::Function
