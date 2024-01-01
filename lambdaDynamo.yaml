@@ -27,6 +27,7 @@ HttpApi:
       AttributeDefinitions:
         - AttributeName: "ExampleId"
           AttributeType: "S"
+      ## on't include any non-key attribute definitions in AttributeDefinitions
       KeySchema:
         - AttributeName: "ExampleId"
           KeyType: "HASH"
