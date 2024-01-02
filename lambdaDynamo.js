@@ -6,6 +6,9 @@ import {
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
 
+// crypto can be used to generate a unique id using: crypto.randomUUID()
+import crypto from "crypto";
+
 const dynamoClient = new DynamoDBClient({ region: "eu-central-1" });
 
 const tableName = process.env.TABLE_NAME;
