@@ -28,8 +28,9 @@ export async function handler(event, context) {
       );
 
       return JSON.stringify({
-        username: username,
-        incubators: incubators,
+        // make sure you process the Dynamo DB result
+        // It will return arrays of Items which are objects rather than simple values
+        // You should make sure you process them so that you can return a simpler array of values
       });
     }
     ... continued for other httpMethods
