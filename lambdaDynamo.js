@@ -36,10 +36,11 @@ export async function handler(event, context) {
     ... continued for other httpMethods
   } catch (error) {
     console.error(error);
+    // yes it's bad practice, but we're going to return the error back to the front end
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: "Failed to process request",
+        message: "Failed to process request. Error was: " + error.toString(),
       }),
     };
   }
