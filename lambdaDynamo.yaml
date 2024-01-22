@@ -47,31 +47,31 @@ HttpApi:
         HttpApiGET:
           Type: HttpApi
           Properties:
-            Path: /[CELL_ID]/{id}
+            Path: /{id}
             Method: GET
             ApiId: !Ref HttpApi
         HttpApiGETMultiple:
           Type: HttpApi
           Properties:
-            Path: /[CELL_ID]/
+            Path: /
             Method: GET
             ApiId: !Ref HttpApi
         HttpApiPUT:
           Type: HttpApi
           Properties:
-            Path: /[CELL_ID]/{id}
+            Path: /{id}
             Method: PUT
             ApiId: !Ref HttpApi
         HttpApiPOST:
           Type: HttpApi
           Properties:
-            Path: /[CELL_ID]/
+            Path: /
             Method: POST
             ApiId: !Ref HttpApi
         HttpApiDELETE:
           Type: HttpApi
           Properties:
-            Path: /[CELL_ID]/{id}
+            Path: /{id}
             Method: DELETE
             ApiId: !Ref HttpApi
       Policies:
