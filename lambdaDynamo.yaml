@@ -80,5 +80,3 @@ HttpApi:
       Environment:
         Variables:
           TABLE_NAME: !Ref [CELL_ID]Table
-
-# Add additional events or edit this one as required
