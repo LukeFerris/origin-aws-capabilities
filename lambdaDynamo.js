@@ -19,6 +19,10 @@ export async function handler(event, context) {
     const httpMethod = event.requestContext.http.method;
 
     if (httpMethod === "GET") {
+
+      // always check here that all the information your expecting from the front end (if any) is present
+      // if it is not, respond with a 400 error and a very clear message stating exactly what was missing
+
       // get incubators for the given user
       const result = await dynamoClient.send(
         new ScanCommand({
