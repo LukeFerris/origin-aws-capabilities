@@ -18,6 +18,7 @@ export async function handler(event, context) {
   try {
     const httpMethod = event.requestContext.http.method;
 
+    // Do not use switch for http methods.. use if/else
     if (httpMethod === "GET") {
 
       // always check here that all the information your expecting from the front end (if any) is present
