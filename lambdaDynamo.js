@@ -37,7 +37,7 @@ export async function handler(event, context) {
         // You should make sure you process them so that you can return a simpler array of values
       });
     }
-    ... continued for other httpMethods
+    ... continued for other httpMethods - make sure you don't declare const identifiers more than once
   } catch (error) {
     console.error(error);
     // yes it's bad practice, but we're going to return the error back to the front end
