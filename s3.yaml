@@ -8,7 +8,7 @@ Resources:
   [CELL_ID]PublicS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: [CELL_ID]bucket 
+      BucketName: !Sub ${AWS::StackName}[LOWER_CASE_CELL_ID]bucket 
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
