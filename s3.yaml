@@ -9,7 +9,20 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Sub ${AWS::StackName}[LOWER_CASE_CELL_ID]bucket 
-      AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
+  [CELL_ID]BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: [CELL_ID]BucketPolicy
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 
+              - 's3:GetObject'
+            Resource: !Sub 'arn:aws:s3:::${[CELL_ID]PublicS3Bucket}/*'
+      Bucket: !Ref [CELL_ID]PublicS3Bucket
