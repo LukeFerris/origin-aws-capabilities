@@ -9,6 +9,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Sub ${AWS::StackName}[LOWER_CASE_CELL_ID]bucket 
+      # AccessControl: PublicRead - DO NOT add AccessControl to PublicRead as access is being managed via the BucketPolicy
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
