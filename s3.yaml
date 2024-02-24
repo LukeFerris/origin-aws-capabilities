@@ -1,0 +1,15 @@
+
+Outputs:
+  [CELL_ID]BucketURL:
+    Description: URL of the S3 bucket website
+    Value: !GetAtt [CELL_ID]PublicS3Bucket.WebsiteURL
+
+Resources:
+  [CELL_ID]PublicS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: [CELL_ID]bucket 
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
