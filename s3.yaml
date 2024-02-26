@@ -3,6 +3,9 @@ Outputs:
   [CELL_ID]BucketURL:
     Description: URL of the S3 bucket website
     Value: !GetAtt [CELL_ID]PublicS3Bucket.WebsiteURL
+  [CELL_ID]Url:
+    Description: The HTTP API Gateway url for the created lambda
+    Value: !Sub https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com
 
 Resources:
   [CELL_ID]PublicS3Bucket:
@@ -10,20 +13,72 @@ Resources:
     Properties:
       BucketName: !Sub ${AWS::StackName}[LOWER_CASE_CELL_ID]bucket 
       # AccessControl: PublicRead - DO NOT add AccessControl to PublicRead as access is being managed via the BucketPolicy
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - '*'
+            MaxAge: 3600
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
+
   [CELL_ID]BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
       PolicyDocument:
-        Id: [CELL_ID]BucketPolicy
-        Version: '2012-10-17'
-        Statement:
-          - Sid: PublicReadGetObject
-            Effect: Allow
-            Principal: '*'
-            Action: 
-              - 's3:GetObject'
-            Resource: !Sub 'arn:aws:s3:::${[CELL_ID]PublicS3Bucket}/*'
-      Bucket: !Ref [CELL_ID]PublicS3Bucket
+        Id: RequireEncryptionInTransit
+          Version: '2012-10-17'
+          Statement:
+            - Principal: '*'
+              Action: '*'
+              Effect: Deny
+              Resource:
+                - !GetAtt [CELL_ID]PublicS3Bucket.Arn
+                - !Sub ${[CELL_ID]PublicS3Bucket.Arn}/*
+              Condition:
+                Bool:
+                  aws:SecureTransport: 'false'
+  [CELL_ID]HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - "*"
+        ExposeHeaders:
+          - X-Total-Count
+      FailOnWarnings: true
+  [CELL_ID]UploadUrlAPI:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-[CELL_ID]UploadUrlAPI
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: [CELL_ID]UploadUrlAPI:
+      CodeUri: ../../working/[CELL_ID]
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - S3CrudPolicy:
+            BucketName: !Ref [CELL_ID]PublicS3Bucket
+      Events:
+        HttpApiGETMultiple:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: GET
+            ApiId: !Ref HttpApi
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref [CELL_ID]PublicS3Bucket
