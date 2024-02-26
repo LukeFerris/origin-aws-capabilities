@@ -11,7 +11,12 @@ Resources:
   [CELL_ID]PublicS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub ${AWS::StackName}[LOWER_CASE_CELL_ID]bucket 
+      BucketName: !Sub ${AWS::StackName}[LOWER_CASE_CELL_ID]bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        IgnorePublicAcls: false
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false
       # AccessControl: PublicRead - DO NOT add AccessControl to PublicRead as access is being managed via the BucketPolicy
       CorsConfiguration:
         CorsRules:
@@ -19,6 +24,7 @@ Resources:
               - '*'
             AllowedMethods:
               - GET
+              - PUT
             AllowedOrigins:
               - '*'
             MaxAge: 3600
@@ -27,21 +33,28 @@ Resources:
         ErrorDocument: error.html
 
   [CELL_ID]BucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
+    Type: "AWS::S3::BucketPolicy"
     Properties:
       PolicyDocument:
-        Id: RequireEncryptionInTransit
-          Version: '2012-10-17'
-          Statement:
-            - Principal: '*'
-              Action: '*'
-              Effect: Deny
-              Resource:
-                - !GetAtt [CELL_ID]PublicS3Bucket.Arn
-                - !Sub ${[CELL_ID]PublicS3Bucket.Arn}/*
-              Condition:
-                Bool:
-                  aws:SecureTransport: 'false'
+        Id: S3Policy
+        Statement:
+          - Sid: RequireEncryptionInTransit
+            Principal: "*"
+            Action: "*"
+            Effect: Deny
+            Resource:
+              - !GetAtt [CELL_ID]PublicS3Bucket.Arn
+              - !Sub ${[CELL_ID]PublicS3Bucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+          - Sid: PublicReadGetObject
+            Principal: "*"
+            Action: "s3:GetObject"
+            Effect: Allow
+            Resource: !Sub "${[CELL_ID]PublicS3Bucket.Arn}/*"
+      Bucket: !Ref [CELL_ID]PublicS3Bucket
+        
   [CELL_ID]HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -55,6 +68,7 @@ Resources:
         ExposeHeaders:
           - X-Total-Count
       FailOnWarnings: true
+
   [CELL_ID]UploadUrlAPI:
     Type: AWS::Serverless::Function
     Properties:
@@ -73,12 +87,12 @@ Resources:
         - S3CrudPolicy:
             BucketName: !Ref [CELL_ID]PublicS3Bucket
       Events:
-        HttpApiGETMultiple:
+        HttpApiGET:
           Type: HttpApi
           Properties:
             Path: /
             Method: GET
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
       Environment:
         Variables:
           BUCKET_NAME: !Ref [CELL_ID]PublicS3Bucket
