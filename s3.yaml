@@ -73,9 +73,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${AWS::StackName}-[CELL_ID]UploadUrlAPI
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: [CELL_ID]UploadUrlAPI:
       CodeUri: ../../working/[CELL_ID]
       Handler: index.handler
       Runtime: nodejs18.x
