@@ -1,4 +1,6 @@
 
+# IMPORTANT: All elements in this cloudformation are required for the cell to function. Do not take elements of it partially.
+
 Outputs:
   [CELL_ID]BucketURL:
     Description: URL of the S3 bucket website
