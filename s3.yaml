@@ -4,7 +4,7 @@
 Outputs:
   [CELL_ID]BucketURL:
     Description: URL of the S3 bucket website
-    Value: !Sub https://${PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com/
+    Value: !Sub https://${PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com
   [CELL_ID]Url:
     Description: The HTTP API Gateway url for the created lambda
     Value: !Sub https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com
