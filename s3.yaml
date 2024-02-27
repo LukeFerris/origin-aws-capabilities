@@ -4,7 +4,7 @@
 Outputs:
   [CELL_ID]BucketURL:
     Description: URL of the S3 bucket website
-    Value: !GetAtt [CELL_ID]PublicS3Bucket.WebsiteURL
+    Value: !Sub https://${PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com/
   [CELL_ID]Url:
     Description: The HTTP API Gateway url for the created lambda
     Value: !Sub https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com
@@ -30,9 +30,6 @@ Resources:
             AllowedOrigins:
               - '*'
             MaxAge: 3600
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: error.html
 
   [CELL_ID]BucketPolicy:
     Type: "AWS::S3::BucketPolicy"
