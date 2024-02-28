@@ -5,9 +5,12 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const s3Client = new S3Client({ region: "eu-central-1" }); // Replace 'YOUR_REGION' with your S3 bucket's region
 const bucketName = process.env.BUCKET_NAME;
 
-const handler = async (event) => {
+const handler = async (event, context) => {
   // Extracting the filename from the query string parameters
-  const objectKey = event.queryStringParameters?.filename || "defaultFileName";
+  const fileType = event.queryStringParameters?.fileType || "jpg";
+
+  // use the aws requestId as the filename
+  const objectKey = context.awsRequestId + "." + fileType;
 
   const command = new PutObjectCommand({
     Bucket: bucketName,
