@@ -25,6 +25,7 @@ const handler = async (event, context) => {
       body: JSON.stringify({
         message: "Presigned URL generated successfully",
         uploadUrl: url,
+        fileName: objectKey,
       }),
     };
   } catch (err) {
