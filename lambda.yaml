@@ -26,7 +26,7 @@ HttpApi:
       Description: !Sub
         - Stack ${AWS::StackName} Function ${ResourceName}
         - ResourceName: [CELL_ID]
-      CodeUri: ../../working/[CELL_ID]
+      CodeUri: ../../working/[CELL_ID] ## Do not change this line
       Handler: index.handler
       Runtime: nodejs18.x
       Events:
