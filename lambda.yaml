@@ -5,7 +5,7 @@ Outputs:
     Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
 
 # HTTP API to expose the lambda function to the internet with no authentication
-HttpApi:
+[CELL_ID]HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       CorsConfiguration:
@@ -35,5 +35,5 @@ HttpApi:
           Properties:
             Path: /
             Method: GET
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
 # Add additional events or edit this one as required
