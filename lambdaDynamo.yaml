@@ -2,10 +2,10 @@
 Outputs:
   [CELL_ID]Url:
     Description: The HTTP API Gateway url for the created lambda
-    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
+    Value: !Sub https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com
 
 # HTTP API to expose the lambda function to the internet with no authentication
-HttpApi:
+[CELL_ID]HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       CorsConfiguration:
@@ -51,31 +51,31 @@ HttpApi:
           Properties:
             Path: /{id}
             Method: GET
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
         HttpApiGETMultiple:
           Type: HttpApi
           Properties:
             Path: /
             Method: GET
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
         HttpApiPUT:
           Type: HttpApi
           Properties:
             Path: /{id}
             Method: PUT
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
         HttpApiPOST:
           Type: HttpApi
           Properties:
             Path: /
             Method: POST
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
         HttpApiDELETE:
           Type: HttpApi
           Properties:
             Path: /{id}
             Method: DELETE
-            ApiId: !Ref HttpApi
+            ApiId: !Ref [CELL_ID]HttpApi
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref [CELL_ID]Table
