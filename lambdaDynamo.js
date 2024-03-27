@@ -1,3 +1,4 @@
+// An example is shown below for a lambda function that interacts with DynamoDB to manage a company data entity
 import {
   DynamoDBClient,
   PutItemCommand,
@@ -18,30 +19,130 @@ export async function handler(event, context) {
   try {
     const httpMethod = event.requestContext.http.method;
 
-    // Do not use switch for http methods.. use if/else
-    if (httpMethod === "GET") {
+    if (httpMethod === "POST") {
+      const { companyName, address } = JSON.parse(event.body);
 
-      // always check here that all the information your expecting from the front end (if any) is present
-      // if it is not, respond with a 400 error and a very clear message stating exactly what was missing
+      // Check if companyName and address are provided
+      if (!companyName || !address) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            message: "CompanyName and address are required",
+          }),
+        };
+      }
 
-      // get incubators for the given user
-      const result = await dynamoClient.send(
-        new ScanCommand({
+      const companyId = crypto.randomUUID();
+      await dynamoClient.send(
+        new PutItemCommand({
           TableName: tableName,
-          ProjectionExpression: "config",
+          Item: {
+            companyId: { S: companyId },
+            companyName: { S: companyName },
+            address: { S: address },
+          },
         })
       );
 
-      return JSON.stringify({
-        // make sure you process the Dynamo DB result
-        // It will return arrays of Items which are objects rather than simple values
-        // You should make sure you process them so that you can return a simpler array of values
-      });
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          companyId,
+          companyName,
+          address,
+        }),
+      };
+    } else if (httpMethod === "DELETE") {
+      // event.pathParameters can be null!
+      const { id } = event.pathParameters || {};
+
+      if (!id) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            message: "companyId is required as a path parameter",
+          }),
+        };
+      }
+
+      await dynamoClient.send(
+        new DeleteItemCommand({
+          TableName: tableName,
+          Key: {
+            companyId: { S: id },
+          },
+        })
+      );
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `Company with ID ${id} deleted successfully`,
+        }),
+      };
+    } else if (httpMethod === "GET") {
+      // event.pathParameters can be null!
+      const { id } = event.pathParameters || {};
+
+      if (id) {
+        // Get individual item
+        const result = await dynamoClient.send(
+          new GetItemCommand({
+            TableName: tableName,
+            Key: {
+              companyId: { S: id },
+            },
+          })
+        );
+
+        if (!result.Item) {
+          return {
+            statusCode: 404,
+            body: JSON.stringify({
+              message: `Company with ID ${id} not found`,
+            }),
+          };
+        }
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            companyId: result.Item.companyId.S,
+            companyName: result.Item.companyName.S,
+            address: result.Item.address.S,
+          }),
+        };
+      } else {
+        // Get all items
+        const result = await dynamoClient.send(
+          new ScanCommand({
+            TableName: tableName,
+          })
+        );
+
+        const items = result.Items.map((item) => ({
+          companyId: item.companyId.S,
+          companyName: item.companyName.S,
+          address: item.address.S,
+        }));
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            Items: items,
+          }),
+        };
+      }
+    } else {
+      return {
+        statusCode: 405,
+        body: JSON.stringify({
+          message: "Method not allowed",
+        }),
+      };
     }
-    ... continued for other httpMethods - make sure you don't declare const identifiers more than once
   } catch (error) {
     console.error(error);
-    // yes it's bad practice, but we're going to return the error back to the front end
     return {
       statusCode: 500,
       body: JSON.stringify({
