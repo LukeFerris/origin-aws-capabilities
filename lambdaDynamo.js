@@ -10,7 +10,8 @@ import {
 // crypto can be used to generate a unique id using: crypto.randomUUID()
 import crypto from "crypto";
 
-const dynamoClient = new DynamoDBClient({ region: "eu-central-1" });
+// all code should use eu-central-1 region
+const dynamoClient = new DynamoDBClient({ region: "eu-central-1" }); // do not change the region from eu-central-1
 
 const tableName = process.env.TABLE_NAME;
 
