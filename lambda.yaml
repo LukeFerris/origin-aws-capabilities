@@ -2,7 +2,7 @@
 Outputs:
   [CELL_ID]Url:
     Description: The HTTP API Gateway url for the created lambda
-    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
+    Value: !Sub https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com
 
 # HTTP API to expose the lambda function to the internet with no authentication
 [CELL_ID]HttpApi:
