@@ -12,8 +12,7 @@ import crypto from "crypto";
 
 // all code should use eu-central-1 region
 const dynamoClient = new DynamoDBClient({ region: "eu-central-1" }); // do not change the region from eu-central-1
-
-const tableName = process.env.TABLE_NAME;
+const tableName = process.env.TABLE_NAME; // do not change the table name - it is imported from process.env
 
 // handler
 export async function handler(event, context) {
