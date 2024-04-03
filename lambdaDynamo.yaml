@@ -19,19 +19,21 @@ Outputs:
           - X-Total-Count
       FailOnWarnings: true
 
+## This table example should be modified as little as possible to avoid errors
 [CELL_ID]Table:
     Type: "AWS::DynamoDB::Table"
     Properties:
       ## Never change the billing mode from PAY_PER_REQUEST
       BillingMode: PAY_PER_REQUEST
       TableName: !Sub ${AWS::StackName}-[CELL_ID]]
+      ## never include any non-key attribute definitions in AttributeDefinitions
       AttributeDefinitions:
         - AttributeName: "ExampleId"
           AttributeType: "S"
-      ## never include any non-key attribute definitions in AttributeDefinitions
       KeySchema:
         - AttributeName: "ExampleId"
           KeyType: "HASH"
+      ## Never add any GlobalSecondaryIndexes or associated KeySchemas or Projections
       ## Never add ProvisionedThroughput, as this does not work with PAY_PER_REQUEST.
 
 [CELL_ID]:
