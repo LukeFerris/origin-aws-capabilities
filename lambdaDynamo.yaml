@@ -18,6 +18,8 @@ Outputs:
         ExposeHeaders:
           - X-Total-Count
       FailOnWarnings: true
+      DefinitionBody:
+      <f>Guidance</f>
 
 ## This table example should be modified as little as possible to avoid errors
 [CELL_ID]Table:
