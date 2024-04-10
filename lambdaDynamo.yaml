@@ -51,7 +51,7 @@ Outputs:
         HttpApiGET:
           Type: HttpApi
           Properties:
-            Path: /{id}
+            Path: /{[Update with id from guidance]}
             Method: GET
             ApiId: !Ref [CELL_ID]HttpApi
         HttpApiGETMultiple:
@@ -63,7 +63,7 @@ Outputs:
         HttpApiPUT:
           Type: HttpApi
           Properties:
-            Path: /{id}
+            Path: /{[Update with id from guidance]}
             Method: PUT
             ApiId: !Ref [CELL_ID]HttpApi
         HttpApiPOST:
@@ -75,7 +75,7 @@ Outputs:
         HttpApiDELETE:
           Type: HttpApi
           Properties:
-            Path: /{id}
+            Path: /{[Update with id from guidance]}
             Method: DELETE
             ApiId: !Ref [CELL_ID]HttpApi
       Policies:
