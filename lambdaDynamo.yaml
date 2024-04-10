@@ -18,10 +18,8 @@ Outputs:
         ExposeHeaders:
           - X-Total-Count
       FailOnWarnings: true
-      # IMPORTANT do not change this definition body #
       DefinitionBody:
       Open API specification goes here
-      # END IMPORTANT do not change this definition body #
 
 ## This table example should be modified as little as possible to avoid errors
 [CELL_ID]Table:
