@@ -18,9 +18,10 @@ Outputs:
         ExposeHeaders:
           - X-Total-Count
       FailOnWarnings: true
-      # Under no circumstances should you update or change the provided DefinitionBody
+      # IMPORTANT do not change this definition body #
       DefinitionBody:
       <f>Guidance</f>
+      # END IMPORTANT do not change this definition body #
 
 ## This table example should be modified as little as possible to avoid errors
 [CELL_ID]Table:
