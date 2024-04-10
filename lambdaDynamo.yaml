@@ -18,6 +18,7 @@ Outputs:
         ExposeHeaders:
           - X-Total-Count
       FailOnWarnings: true
+      # Under no circumstances should you update or change the provided DefinitionBody
       DefinitionBody:
       <f>Guidance</f>
 
