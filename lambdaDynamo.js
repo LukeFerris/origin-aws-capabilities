@@ -23,6 +23,9 @@ export async function handler(event, context) {
     if (contentType !== "application/json") {
       return {
         statusCode: 415, // Unsupported Media Type
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           message: "Invalid Content-Type. Expected 'application/json'.",
         }),
@@ -38,6 +41,9 @@ export async function handler(event, context) {
       if (!companyName || !address) {
         return {
           statusCode: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             message: "CompanyName and address are required",
           }),
@@ -58,6 +64,9 @@ export async function handler(event, context) {
 
       return {
         statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           companyId,
           companyName,
@@ -71,6 +80,9 @@ export async function handler(event, context) {
       if (!id) {
         return {
           statusCode: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             message: "companyId is required as a path parameter",
           }),
@@ -88,6 +100,9 @@ export async function handler(event, context) {
 
       return {
         statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           message: `Company with ID ${id} deleted successfully`,
         }),
@@ -110,6 +125,9 @@ export async function handler(event, context) {
         if (!result.Item) {
           return {
             statusCode: 404,
+            headers: {
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify({
               message: `Company with ID ${id} not found`,
             }),
@@ -118,6 +136,9 @@ export async function handler(event, context) {
 
         return {
           statusCode: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             companyId: result.Item.companyId.S,
             companyName: result.Item.companyName.S,
@@ -140,6 +161,9 @@ export async function handler(event, context) {
 
         return {
           statusCode: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             Items: items,
           }),
@@ -148,6 +172,9 @@ export async function handler(event, context) {
     } else {
       return {
         statusCode: 405,
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           message: "Method not allowed",
         }),
