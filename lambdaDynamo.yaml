@@ -20,7 +20,7 @@ Outputs:
       FailOnWarnings: true
       # IMPORTANT do not change this definition body #
       DefinitionBody:
-      <f>Guidance</f>
+      Open API specification goes here
       # END IMPORTANT do not change this definition body #
 
 ## This table example should be modified as little as possible to avoid errors
