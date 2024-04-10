@@ -17,21 +17,6 @@ const tableName = process.env.TABLE_NAME; // do not change the table name - it i
 // handler
 export async function handler(event, context) {
   try {
-    // Validate Content-Type header
-    const contentType =
-      event.headers["Content-Type"] || event.headers["content-type"];
-    if (contentType !== "application/json") {
-      return {
-        statusCode: 415, // Unsupported Media Type
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: "Invalid Content-Type. Expected 'application/json'.",
-        }),
-      };
-    }
-
     const httpMethod = event.requestContext.http.method;
 
     if (httpMethod === "POST") {
