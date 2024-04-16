@@ -149,9 +149,7 @@ export async function handler(event, context) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            items,
-          }),
+          body: JSON.stringify(items),
         };
       }
     } else {
