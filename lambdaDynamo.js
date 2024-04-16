@@ -150,7 +150,7 @@ export async function handler(event, context) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            Items: items,
+            items,
           }),
         };
       }
