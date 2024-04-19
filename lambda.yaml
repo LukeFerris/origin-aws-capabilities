@@ -18,6 +18,8 @@ Outputs:
         ExposeHeaders:
           - X-Total-Count
       FailOnWarnings: true
+      DefinitionBody:
+      Open API specification goes here
 
 [CELL_ID]:
     Type: AWS::Serverless::Function
