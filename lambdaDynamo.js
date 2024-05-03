@@ -19,7 +19,7 @@ export async function handler(event, context) {
   try {
     const httpMethod = event.requestContext.http.method;
 
-    if (httpMethod === "POST") {
+    if (httpMethod == "POST") {
       const { companyName, address } = JSON.parse(event.body);
 
       // Check if companyName and address are provided
@@ -58,7 +58,7 @@ export async function handler(event, context) {
           address,
         }),
       };
-    } else if (httpMethod === "DELETE") {
+    } else if (httpMethod == "DELETE") {
       // event.pathParameters can be null!
       const { id } = event.pathParameters || {};
 
@@ -92,8 +92,8 @@ export async function handler(event, context) {
           message: `Company with ID ${id} deleted successfully`,
         }),
       };
-    } else if (httpMethod === "GET") {
-      // event.pathParameters can be null!
+    } else if (httpMethod == "GET") {
+      // event.pathParameters can be undefined!
       const { id } = event.pathParameters || {};
 
       if (id) {
