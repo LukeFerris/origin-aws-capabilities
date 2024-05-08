@@ -1,0 +1,133 @@
+{
+  "Outputs": {
+    "[CELL_ID]Url": {
+      "Description": "The HTTP API Gateway url for the created lambda",
+      "Value": {
+        "Fn::Sub": "https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+      }
+    }
+  },
+  "Resources": {
+    "[CELL_ID]HttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": ["*"],
+          "AllowHeaders": ["*"],
+          "AllowMethods": ["*"],
+          "ExposeHeaders": ["X-Total-Count"]
+        },
+        "FailOnWarnings": true,
+        "DefinitionBody": "Open API specification goes here"
+      }
+    },
+    "[CELL_ID]Table": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "BillingMode": "PAY_PER_REQUEST",
+        "TableName": {
+          "Fn::Sub": "${AWS::StackName}-[CELL_ID]"
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "ExampleId",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "ExampleId",
+            "KeyType": "HASH"
+          }
+        ]
+      }
+    },
+    "[CELL_ID]": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${AWS::StackName}-[CELL_ID]"
+        },
+        "Description": {
+          "Fn::Sub": [
+            "Stack ${AWS::StackName} Function ${ResourceName}",
+            {
+              "ResourceName": "[CELL_ID]"
+            }
+          ]
+        },
+        "CodeUri": "../../working/[CELL_ID]",
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/{[Update with id from guidance]}",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiGETMultiple": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiPUT": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/{[Update with id from guidance]}",
+              "Method": "PUT",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiPOST": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "POST",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiDELETE": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/{[Update with id from guidance]}",
+              "Method": "DELETE",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          }
+        },
+        "Policies": [
+          {
+            "DynamoDBCrudPolicy": {
+              "TableName": {
+                "Ref": "[CELL_ID]Table"
+              }
+            }
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "[CELL_ID]Table"
+            }
+          }
+        }
+      }
+    }
+  }
+}

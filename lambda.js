@@ -1,10 +1,12 @@
-// An example is shown below for a lambda function
+// An example is shown below for a javascript lambda function
+// import crypto from "crypto"; // use ES6 notation
 
 // handler
 export async function handler(event, context) {
   try {
     const httpMethod = event.requestContext.http.method;
 
+    // checking the method is sufficient as this comes from API Gateway which has already confirmed the path
     if (httpMethod === "POST") {
       return {
         headers: {

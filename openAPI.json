@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TaskAPI",
+    "description": "Replace this with a description of the API and a specific instruction that the API can be reached using the environment variable VITE_[CELL_ID]Url.",
+    "version": "1.0.0"
+  },
+  "x-amazon-apigateway-request-validators": {
+    "full": {
+      "validateRequestBody": true,
+      "validateRequestParameters": true
+    }
+  },
+  "x-amazon-apigateway-request-validator": "full",
+  "paths": {
+    "....": {}
+  },
+  "components": {
+    "....": {}
+  }
+}
