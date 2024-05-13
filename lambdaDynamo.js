@@ -20,6 +20,7 @@ export async function handler(event, context) {
     const httpMethod = event.requestContext.http.method;
 
     // checking the method is sufficient as this comes from API Gateway which has already confirmed the path
+    // as such, never do any further validation checks on the path
     if (httpMethod == "POST") {
       const { companyName, address } = JSON.parse(event.body);
 
