@@ -7,44 +7,46 @@
       }
     }
   },
-  "[CELL_ID]HttpApi": {
-    "Type": "AWS::Serverless::HttpApi",
-    "Properties": {
-      "CorsConfiguration": {
-        "AllowOrigins": ["*"],
-        "AllowHeaders": ["*"],
-        "AllowMethods": ["*"],
-        "ExposeHeaders": ["X-Total-Count"]
-      },
-      "FailOnWarnings": true,
-      "DefinitionBody": "Open API specification goes here"
-    }
-  },
-  "[CELL_ID]": {
-    "Type": "AWS::Serverless::Function",
-    "Properties": {
-      "FunctionName": {
-        "Fn::Sub": "${AWS::StackName}-[CELL_ID]"
-      },
-      "Description": {
-        "Fn::Sub": [
-          "Stack ${AWS::StackName} Function ${ResourceName}",
-          {
-            "ResourceName": "[CELL_ID]"
-          }
-        ]
-      },
-      "CodeUri": "../../working/[CELL_ID]",
-      "Handler": "index.handler",
-      "Runtime": "nodejs18.x",
-      "Events": {
-        "HttpApiGET": {
-          "Type": "HttpApi",
-          "Properties": {
-            "Path": "/",
-            "Method": "GET",
-            "ApiId": {
-              "Ref": "[CELL_ID]HttpApi"
+  "Resources": {
+    "[CELL_ID]HttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": ["*"],
+          "AllowHeaders": ["*"],
+          "AllowMethods": ["*"],
+          "ExposeHeaders": ["X-Total-Count"]
+        },
+        "FailOnWarnings": true,
+        "DefinitionBody": "Open API specification goes here"
+      }
+    },
+    "[CELL_ID]": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${AWS::StackName}-[CELL_ID]"
+        },
+        "Description": {
+          "Fn::Sub": [
+            "Stack ${AWS::StackName} Function ${ResourceName}",
+            {
+              "ResourceName": "[CELL_ID]"
+            }
+          ]
+        },
+        "CodeUri": "../../working/[CELL_ID]",
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
             }
           }
         }
