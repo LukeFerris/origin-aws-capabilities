@@ -1,0 +1,119 @@
+{
+  "Parameters": {
+    "PublicSiteDomainName": {
+      "Type": "String",
+      "Description": "The domain name to use for the site"
+    },
+    "CertificateARN": {
+      "Type": "String",
+      "Description": "The ARN of the certificate to be used"
+    }
+  },
+  "Resources": {
+    "PublicSite": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Sub": "${AWS::StackName}-origin-[CELL_ID]-site"
+        },
+        "WebsiteConfiguration": {
+          "IndexDocument": "index.html"
+        }
+      }
+    },
+    "Public-Cdn": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "TargetOriginId": "origin-[SOLUTION_ID]-CDN",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "Enabled": true,
+          "DefaultRootObject": "index.html",
+          "PriceClass": "PriceClass_100",
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": ["PublicSite", "RegionalDomainName"]
+              },
+              "Id": "origin-[SOLUTION_ID]-CDN",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Sub": [
+                    "origin-access-identity/cloudfront/${OriginAccessIdentity}",
+                    {
+                      "OriginAccessIdentity": {
+                        "Ref": "CdnOriginAccessIdentity"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "Aliases": [
+            {
+              "Ref": "PublicSiteDomainName"
+            }
+          ],
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "CertificateARN"
+            },
+            "SslSupportMethod": "sni-only",
+            "MinimumProtocolVersion": "TLSv1"
+          }
+        }
+      }
+    },
+    "CdnOriginAccessIdentity": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Origin [SOLUTION_ID] CDN identity"
+        }
+      }
+    },
+    "PublicCdnBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "PublicSite"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CdnOriginAccessIdentity}"
+                }
+              },
+              "Action": "s3:GetObject",
+              "Resource": {
+                "Fn::Sub": [
+                  "${BucketArn}/*",
+                  {
+                    "BucketArn": {
+                      "Fn::GetAtt": ["PublicSite", "Arn"]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
