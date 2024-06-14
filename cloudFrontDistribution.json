@@ -1,14 +1,4 @@
 {
-  "Parameters": {
-    "PublicSiteDomainName": {
-      "Type": "String",
-      "Description": "The domain name to use for the site"
-    },
-    "CertificateARN": {
-      "Type": "String",
-      "Description": "The ARN of the certificate to be used"
-    }
-  },
   "Resources": {
     "PublicSite": {
       "Type": "AWS::S3::Bucket",
@@ -63,12 +53,12 @@
           ],
           "Aliases": [
             {
-              "Ref": "PublicSiteDomainName"
+              "Ref": "[SOLUTION_ID].theorigin.ai"
             }
           ],
           "ViewerCertificate": {
             "AcmCertificateArn": {
-              "Ref": "CertificateARN"
+              "Ref": "arn:aws:acm:us-east-1:360520317360:certificate/b23c0b4f-7565-487f-8162-758df988aede"
             },
             "SslSupportMethod": "sni-only",
             "MinimumProtocolVersion": "TLSv1"
