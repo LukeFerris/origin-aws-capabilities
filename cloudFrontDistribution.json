@@ -4,7 +4,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${AWS::StackName}-origin-[CELL_ID]-site"
+          "Fn::Sub": "${AWS::StackName}-origin-public-site"
         },
         "WebsiteConfiguration": {
           "IndexDocument": "index.html"
@@ -27,7 +27,7 @@
         ]
       }
     },
-    "Public-Cdn": {
+    "SiteCdn": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
