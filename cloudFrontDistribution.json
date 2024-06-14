@@ -11,6 +11,22 @@
         }
       }
     },
+    "PerEnvironmnetRoute53Record": {
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneId": "Z0774359MJ4TNSWB6K7M",
+        "RecordSets": [
+          {
+            "Name": "[SOLUTION_ID].theorigin.ai",
+            "Type": "A",
+            "AliasTarget": {
+              "HostedZoneId": "Z2FDTNDATAQYW2",
+              "DNSName": { "Fn::GetAtt": ["SiteCdn", "DomainName"] }
+            }
+          }
+        ]
+      }
+    },
     "Public-Cdn": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
@@ -51,15 +67,9 @@
               }
             }
           ],
-          "Aliases": [
-            {
-              "Ref": "[SOLUTION_ID].theorigin.ai"
-            }
-          ],
+          "Aliases": ["[SOLUTION_ID].theorigin.ai"],
           "ViewerCertificate": {
-            "AcmCertificateArn": {
-              "Ref": "arn:aws:acm:us-east-1:360520317360:certificate/b23c0b4f-7565-487f-8162-758df988aede"
-            },
+            "AcmCertificateArn": "arn:aws:acm:us-east-1:360520317360:certificate/b23c0b4f-7565-487f-8162-758df988aede",
             "SslSupportMethod": "sni-only",
             "MinimumProtocolVersion": "TLSv1"
           }
