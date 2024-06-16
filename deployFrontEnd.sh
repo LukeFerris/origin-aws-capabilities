@@ -3,7 +3,7 @@
 # Get cloudfront distribution id from AWS
 CLOUDFRONT_DISTRIBUTION_ID=$(aws cloudformation describe-stack-resource --region=eu-central-1 --stack-name=o-[SOLUTION_ID_SHORT]-prod --logical-resource-id=SiteCdn --output=text --query=StackResourceDetail.PhysicalResourceId)
 
-cd react-website/
+cd ../../react-website/
 
 vite build --mode prod
 
