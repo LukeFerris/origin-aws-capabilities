@@ -67,7 +67,7 @@
               }
             }
           ],
-          "Aliases": ["[SOLUTION_ID].theorigin.ai"],
+          "Aliases": ["[SOLUTION_SUB_DOMAIN].theorigin.ai"],
           "ViewerCertificate": {
             "AcmCertificateArn": "arn:aws:acm:us-east-1:360520317360:certificate/b23c0b4f-7565-487f-8162-758df988aede",
             "SslSupportMethod": "sni-only",
