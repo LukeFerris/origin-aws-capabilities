@@ -17,7 +17,7 @@
         "HostedZoneId": "Z0774359MJ4TNSWB6K7M",
         "RecordSets": [
           {
-            "Name": "[SOLUTION_ID].theorigin.ai",
+            "Name": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
             "Type": "A",
             "AliasTarget": {
               "HostedZoneId": "Z2FDTNDATAQYW2",
