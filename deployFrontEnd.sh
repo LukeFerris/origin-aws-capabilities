@@ -5,7 +5,7 @@ CLOUDFRONT_DISTRIBUTION_ID=$(aws cloudformation describe-stack-resource --region
 
 cd ../../react-website/
 
-npx vite build --mode prod
+vite build --mode prod
 
 cd prod/
 
