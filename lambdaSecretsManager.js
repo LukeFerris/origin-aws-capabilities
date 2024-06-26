@@ -1,4 +1,3 @@
-// An example is shown below for a lambda function that interacts with AWS Secrets Manager to manage secrets
 import {
   SecretsManagerClient,
   CreateSecretCommand,
@@ -12,6 +11,8 @@ const secretsManagerClient = new SecretsManagerClient({
   region: "eu-central-1",
 }); // do not change the region from eu-central-1
 
+const secretName = [CELL_ID]; // assume secret name is injected as an environment variable
+
 // handler
 export async function handler(event, context) {
   try {
@@ -19,18 +20,18 @@ export async function handler(event, context) {
 
     // checking the method is sufficient as this comes from API Gateway which has already confirmed the path
     // as such, never do any further validation checks on the path
-    if (httpMethod == "POST") {
-      const { secretName, secretValue } = JSON.parse(event.body);
+    if (httpMethod === "POST") {
+      const { secretValue } = JSON.parse(event.body);
 
-      // Check if secretName and secretValue are provided
-      if (!secretName || !secretValue) {
+      // Check if secretValue is provided
+      if (!secretValue) {
         return {
           statusCode: 400,
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            message: "Secret name and value are required",
+            message: "Secret value is required",
           }),
         };
       }
@@ -48,23 +49,22 @@ export async function handler(event, context) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: "Secret created successfully",
-          secretName,
+          message: `Secret ${secretName} created successfully`,
           secretValue,
         }),
       };
-    } else if (httpMethod == "PUT") {
-      const { secretName, secretValue } = JSON.parse(event.body);
+    } else if (httpMethod === "PUT") {
+      const { secretValue } = JSON.parse(event.body);
 
-      // Check if secretName and secretValue are provided
-      if (!secretName || !secretValue) {
+      // Check if secretValue is provided
+      if (!secretValue) {
         return {
           statusCode: 400,
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            message: "Secret name and value are required",
+            message: "Secret value is required",
           }),
         };
       }
@@ -82,27 +82,11 @@ export async function handler(event, context) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: "Secret updated successfully",
-          secretName,
+          message: `Secret ${secretName} updated successfully`,
           secretValue,
         }),
       };
-    } else if (httpMethod == "DELETE") {
-      const { secretName } = JSON.parse(event.body);
-
-      // Check if secretName is provided
-      if (!secretName) {
-        return {
-          statusCode: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: "Secret name is required",
-          }),
-        };
-      }
-
+    } else if (httpMethod === "DELETE") {
       await secretsManagerClient.send(
         new DeleteSecretCommand({
           SecretId: secretName,
@@ -118,7 +102,7 @@ export async function handler(event, context) {
           message: `Secret ${secretName} deleted successfully`,
         }),
       };
-    } else if (httpMethod == "GET") {
+    } else if (httpMethod === "GET") {
       const result = await secretsManagerClient.send(
         new ListSecretsCommand({})
       );
