@@ -11,7 +11,7 @@ const secretsManagerClient = new SecretsManagerClient({
   region: "eu-central-1",
 }); // do not change the region from eu-central-1
 
-const secretName = [CELL_ID]; // assume secret name is injected as an environment variable
+const secretName = "[CELL_ID]";
 
 // handler
 export async function handler(event, context) {
