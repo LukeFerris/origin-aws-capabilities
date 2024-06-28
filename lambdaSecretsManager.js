@@ -11,7 +11,7 @@ const secretsManagerClient = new SecretsManagerClient({
   region: "eu-central-1",
 }); // do not change the region from eu-central-1
 
-const secretName = "[CELL_ID]";
+const secretName = "[SOLUTION_ID]-[CELL_ID]";
 
 // handler
 export async function handler(event, context) {
