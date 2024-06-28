@@ -40,11 +40,15 @@ export async function handler(event, context) {
       const result = await secretsManagerClient.send(
         new ListSecretsCommand({})
       );
+
+      console.log("Secrets list", result.SecretList);
+
       const secretExists = result.SecretList.some(
         (secret) => secret.Name === secretName
       );
 
       if (secretExists) {
+        console.log("Secret already exists, so updating.");
         // Update the secret if it exists
         await secretsManagerClient.send(
           new PutSecretValueCommand({
@@ -64,6 +68,7 @@ export async function handler(event, context) {
           }),
         };
       } else {
+        console.log("Secret does not exist, so creating.");
         // Create a new secret if it does not exist
         await secretsManagerClient.send(
           new CreateSecretCommand({
