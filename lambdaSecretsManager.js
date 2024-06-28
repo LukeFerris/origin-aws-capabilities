@@ -36,23 +36,53 @@ export async function handler(event, context) {
         };
       }
 
-      await secretsManagerClient.send(
-        new CreateSecretCommand({
-          Name: secretName,
-          SecretString: secretValue,
-        })
+      // Check if the secret already exists
+      const result = await secretsManagerClient.send(
+        new ListSecretsCommand({})
+      );
+      const secretExists = result.SecretList.some(
+        (secret) => secret.Name === secretName
       );
 
-      return {
-        statusCode: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: `Secret ${secretName} created successfully`,
-          secretValue,
-        }),
-      };
+      if (secretExists) {
+        // Update the secret if it exists
+        await secretsManagerClient.send(
+          new PutSecretValueCommand({
+            SecretId: secretName,
+            SecretString: secretValue,
+          })
+        );
+
+        return {
+          statusCode: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `Secret ${secretName} updated successfully`,
+            secretValue,
+          }),
+        };
+      } else {
+        // Create a new secret if it does not exist
+        await secretsManagerClient.send(
+          new CreateSecretCommand({
+            Name: secretName,
+            SecretString: secretValue,
+          })
+        );
+
+        return {
+          statusCode: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `Secret ${secretName} created successfully`,
+            secretValue,
+          }),
+        };
+      }
     } else if (httpMethod === "PUT") {
       const { secretValue } = JSON.parse(event.body);
 
