@@ -54,11 +54,11 @@
           }
         },
         "Role": {
-          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+          "Fn::GetAtt": ["GetSecretLambdaExecutionRole", "Arn"]
         }
       }
     },
-    "SecretsLambdaExecutionRole": {
+    "GetSecretLambdaExecutionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
