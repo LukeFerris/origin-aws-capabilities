@@ -3,7 +3,7 @@ import {
   CreateSecretCommand,
   PutSecretValueCommand,
   DeleteSecretCommand,
-  ListSecretsCommand,
+  DescribeSecretCommand,
 } from "@aws-sdk/client-secrets-manager";
 
 // all code should use eu-central-1 region
@@ -36,16 +36,20 @@ export async function handler(event, context) {
         };
       }
 
-      // Check if the secret already exists
-      const result = await secretsManagerClient.send(
-        new ListSecretsCommand({})
-      );
-
-      console.log("Secrets list", result.SecretList);
-
-      const secretExists = result.SecretList.some(
-        (secret) => secret.Name === secretName
-      );
+      let secretExists = false;
+      try {
+        // Check if the secret exists
+        await secretsManagerClient.send(
+          new DescribeSecretCommand({
+            SecretId: secretName,
+          })
+        );
+        secretExists = true;
+      } catch (error) {
+        if (error.name !== "ResourceNotFoundException") {
+          throw error;
+        }
+      }
 
       if (secretExists) {
         console.log("Secret already exists, so updating.");
@@ -138,19 +142,40 @@ export async function handler(event, context) {
         }),
       };
     } else if (httpMethod === "GET") {
-      const result = await secretsManagerClient.send(
-        new ListSecretsCommand({})
-      );
+      try {
+        const result = await secretsManagerClient.send(
+          new DescribeSecretCommand({
+            SecretId: secretName,
+          })
+        );
 
-      const secretNames = result.SecretList.map((secret) => secret.Name);
-
-      return {
-        statusCode: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(secretNames),
-      };
+        return {
+          statusCode: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            secretName: result.Name,
+            description: result.Description,
+            lastChangedDate: result.LastChangedDate,
+            lastAccessedDate: result.LastAccessedDate,
+          }),
+        };
+      } catch (error) {
+        if (error.name === "ResourceNotFoundException") {
+          return {
+            statusCode: 404,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: `Secret ${secretName} not found`,
+            }),
+          };
+        } else {
+          throw error;
+        }
+      }
     } else {
       return {
         statusCode: 405,
