@@ -24,8 +24,13 @@ export async function handler(event, context) {
     if (httpMethod == "POST") {
       const { companyName, address } = JSON.parse(event.body);
 
-      // Check if companyName and address are provided
-      if (!companyName || !address) {
+      // Check if companyName and address are provided and are not empty strings
+      if (
+        !companyName ||
+        !address ||
+        companyName.trim() === "" ||
+        address.trim() === ""
+      ) {
         return {
           statusCode: 400,
           headers: {
@@ -64,7 +69,8 @@ export async function handler(event, context) {
       // event.pathParameters can be null!
       const { id } = event.pathParameters || {};
 
-      if (!id) {
+      // check id is passed and is not an empty string
+      if (!id && id !== "") {
         return {
           statusCode: 400,
           headers: {
