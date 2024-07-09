@@ -104,7 +104,7 @@ export async function handler(event, context) {
       // event.pathParameters can be undefined!
       const { id } = event.pathParameters || {};
 
-      if (id) {
+      if (id && id !== "") {
         // Get individual item
         const result = await dynamoClient.send(
           new GetItemCommand({
