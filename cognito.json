@@ -92,7 +92,7 @@
     "CognitoUserPool": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
-        "UserPoolName": "[SOLUTION_ID]-[CELL_ID]-UserPool",
+        "UserPoolName": "[CELL_ID]UserPool",
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": false
         },
@@ -111,7 +111,7 @@
     "CognitoUserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-        "ClientName": "[SOLUTION_ID]-[CELL_ID]-UserPoolClient",
+        "ClientName": "[CELL_ID]UserPoolClient",
         "UserPoolId": { "Ref": "CognitoUserPool" },
         "ExplicitAuthFlows": [
           "ALLOW_USER_SRP_AUTH",
