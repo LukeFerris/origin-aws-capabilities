@@ -6,11 +6,11 @@
         "Fn::Sub": "https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
       }
     },
-    "[SOLUTION_ID]-[CELL_ID]-UserPoolId": {
+    "[CELL_ID]UserPoolId": {
       "Description": "Cognito User Pool ID",
       "Value": { "Ref": "CognitoUserPool" }
     },
-    "[SOLUTION_ID]-[CELL_ID]-UserPoolClientId": {
+    "[CELL_ID]UserPoolClientId": {
       "Description": "Cognito User Pool Client ID",
       "Value": { "Ref": "CognitoUserPoolClient" }
     }
