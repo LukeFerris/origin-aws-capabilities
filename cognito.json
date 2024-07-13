@@ -8,11 +8,11 @@
     },
     "[CELL_ID]UserPoolId": {
       "Description": "Cognito User Pool ID",
-      "Value": { "Ref": "CognitoUserPool" }
+      "Value": { "Ref": "[CELL_ID]UserPool" }
     },
     "[CELL_ID]UserPoolClientId": {
       "Description": "Cognito User Pool Client ID",
-      "Value": { "Ref": "CognitoUserPoolClient" }
+      "Value": { "Ref": "[CELL_ID]UserPoolClient" }
     }
   },
   "Resources": {
@@ -63,8 +63,8 @@
         },
         "Environment": {
           "Variables": {
-            "USER_POOL_ID": { "Ref": "CognitoUserPool" },
-            "CLIENT_ID": { "Ref": "CognitoUserPoolClient" }
+            "USER_POOL_ID": { "Ref": "[CELL_ID]UserPool" },
+            "CLIENT_ID": { "Ref": "[CELL_ID]UserPoolClient" }
           }
         },
         "Policies": [
@@ -82,14 +82,14 @@
                   "cognito-idp:SignUp",
                   "cognito-idp:AdminConfirmSignUp"
                 ],
-                "Resource": { "Fn::GetAtt": ["CognitoUserPool", "Arn"] }
+                "Resource": { "Fn::GetAtt": ["[CELL_ID]UserPool", "Arn"] }
               }
             ]
           }
         ]
       }
     },
-    "CognitoUserPool": {
+    "[CELL_ID]UserPool": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
         "UserPoolName": "[CELL_ID]UserPool",
@@ -108,11 +108,11 @@
         }
       }
     },
-    "CognitoUserPoolClient": {
+    "[CELL_ID]UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "ClientName": "[CELL_ID]UserPoolClient",
-        "UserPoolId": { "Ref": "CognitoUserPool" },
+        "UserPoolId": { "Ref": "[CELL_ID]UserPool" },
         "ExplicitAuthFlows": [
           "ALLOW_USER_SRP_AUTH",
           "ALLOW_REFRESH_TOKEN_AUTH"
