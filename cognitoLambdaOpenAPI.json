@@ -9,6 +9,7 @@
     "/users": {
       "post": {
         "summary": "Perform user management actions",
+        "security": [{ "CognitoAuth": [] }],
         "operationId": "userManagement",
         "x-amazon-apigateway-request-validator": "full",
         "requestBody": {
@@ -51,6 +52,29 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "CognitoAuth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "x-amazon-apigateway-authtype": "jwt",
+        "x-amazon-apigateway-authorizer": {
+          "type": "jwt",
+          "jwtConfiguration": {
+            "issuer": {
+              "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${[CELL_ID]UserPool}"
+            },
+            "audience": [
+              {
+                "Ref": "[CELL_ID]UserPoolClient"
+              }
+            ]
+          },
+          "identitySource": "$request.header.Authorization"
+        }
+      }
+    },
+    "security": [{ "CognitoAuth": [] }],
     "schemas": {
       "UserManagementRequest": {
         "type": "object",
