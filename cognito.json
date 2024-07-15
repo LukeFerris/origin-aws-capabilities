@@ -25,6 +25,24 @@
           "AllowMethods": ["*"],
           "ExposeHeaders": ["X-Total-Count"]
         },
+        "Auth": {
+          "DefaultAuthorizer": "CognitoAuthorizer",
+          "Authorizers": {
+            "CognitoAuthorizer": {
+              "JwtConfiguration": {
+                "issuer": {
+                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${[CELL_ID]UserPool}"
+                },
+                "audience": [
+                  {
+                    "Ref": "[CELL_ID]UserPoolClient"
+                  }
+                ]
+              },
+              "IdentitySource": "$request.header.Authorization"
+            }
+          }
+        },
         "FailOnWarnings": true,
         "DefinitionBody": "Open API specification goes here"
       }
