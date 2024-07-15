@@ -17,6 +17,25 @@
           "AllowMethods": ["*"],
           "ExposeHeaders": ["X-Total-Count"]
         },
+        // Auth should only be included if you have a shown connection to a Cognito User pool
+        "Auth": {
+          "DefaultAuthorizer": "CognitoAuthorizer",
+          "Authorizers": {
+            "CognitoAuthorizer": {
+              "JwtConfiguration": {
+                "issuer": {
+                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${Replace with Cognito User Pool id as shown in connection}"
+                },
+                "audience": [
+                  {
+                    "Ref": "Replace with Cognito User Pool client as shown in connection"
+                  }
+                ]
+              },
+              "IdentitySource": "$request.header.Authorization"
+            }
+          }
+        },
         "FailOnWarnings": true,
         "DefinitionBody": "Open API specification goes here"
       }

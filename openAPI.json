@@ -12,10 +12,43 @@
     }
   },
   "x-amazon-apigateway-request-validator": "full",
+  // include the security element if you have a connection to a Cognito User Pool
+  "security": [
+    { "Replace this with the id of the connected Cognito User Pool": [] }
+  ],
   "paths": {
-    "....": {}
+    "....": {
+      // Include a security element if you have a connection to a Cognito User Pool
+      "security": [
+        { "Replace this with the name of the connected Cognito User Pool": [] }
+      ]
+    }
   },
   "components": {
-    "....": {}
+    "....": {
+      // if you have a connection Cognito User Pool, you can add a matching securityScheme
+      "securitySchemes": {
+        "CognitoAuth": {
+          "type": "apiKey",
+          "name": "Authorization",
+          "in": "header",
+          "x-amazon-apigateway-authtype": "jwt",
+          "x-amazon-apigateway-authorizer": {
+            "type": "jwt",
+            "jwtConfiguration": {
+              "issuer": {
+                "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${Replace this with the name of the Cognito User Pool shown in the connections}"
+              },
+              "audience": [
+                {
+                  "Ref": "Replace this with the name of the Cognito UserPool client shown in the connections"
+                }
+              ]
+            },
+            "identitySource": "$request.header.Authorization"
+          }
+        }
+      }
+    }
   }
 }
