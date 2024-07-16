@@ -137,6 +137,28 @@
         ],
         "GenerateSecret": false
       }
+    },
+    "CognitoUserPoolGroupAdmin": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "Admin",
+        "UserPoolId": {
+          "Ref": "[CELL_ID]UserPool"
+        },
+        "Description": "Admin group with elevated permissions",
+        "Precedence": 1
+      }
+    },
+    "CognitoUserPoolGroupUser": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "User",
+        "UserPoolId": {
+          "Ref": "[CELL_ID]UserPool"
+        },
+        "Description": "Regular user group",
+        "Precedence": 2
+      }
     }
   }
 }
