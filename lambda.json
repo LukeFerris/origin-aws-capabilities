@@ -24,11 +24,11 @@
             "CognitoAuthorizer": {
               "JwtConfiguration": {
                 "issuer": {
-                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${Replace with Cognito User Pool id as shown in connection}"
+                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${Replace with the logical id of the Cognito User pool as shown in the connection}"
                 },
                 "audience": [
                   {
-                    "Ref": "Replace with Cognito User Pool client as shown in connection"
+                    "Ref": "Replace with logical id of the Cognito User Pool client as shown in connection"
                   }
                 ]
               },
