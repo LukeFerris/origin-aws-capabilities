@@ -5,3 +5,5 @@ USER_POOL_ID=$(aws cloudformation describe-stack-resource --region=eu-central-1 
 aws cognito-idp  admin-create-user --region=eu-central-1 --user-pool-id=$USER_POOL_ID --username=Admin --user-attributes Name=email,Value=admin@theorigin.ai --message-action=SUPPRESS --output=text
 
 aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID --username Admin --password Admin2024! --permanent
+
+aws cognito-idp admin-add-user-to-group --region=eu-central-1 --user-pool-id=$USER_POOL_ID --username=Admin --group-name=Admin
