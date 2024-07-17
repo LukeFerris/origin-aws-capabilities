@@ -6,6 +6,8 @@ import {
   AdminSetUserPasswordCommand,
   SignUpCommand,
   AdminConfirmSignUpCommand,
+  ListUsersCommand,
+  AdminGetUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 
 const cognitoClient = new CognitoIdentityProviderClient({
@@ -18,24 +20,23 @@ const clientId = "[SOLUTION_ID]-[CELL_ID]-UserPoolClientId";
 export async function handler(event, context) {
   try {
     const httpMethod = event.requestContext.http.method;
-    const { action, username, ...userData } = JSON.parse(event.body || "{}");
+    const path = event.requestContext.http.path;
+    const userId = path.split("/").pop();
+    const userData = JSON.parse(event.body || "{}");
 
     switch (httpMethod) {
-      case "POST":
-        switch (action) {
-          case "createUser":
-            return await createUser(username, userData);
-          case "deleteUser":
-            return await deleteUser(username);
-          case "updateUser":
-            return await updateUser(username, userData);
-          case "resetPassword":
-            return await resetPassword(username, userData.password);
-          case "selfRegister":
-            return await selfRegister(username, userData);
-          default:
-            return badRequest("Invalid action");
+      case "GET":
+        if (userId === "users") {
+          return await listUsers();
+        } else {
+          return await getUser(userId);
         }
+      case "POST":
+        return await createUser(userData);
+      case "PUT":
+        return await updateUser(userId, userData);
+      case "DELETE":
+        return await deleteUser(userId);
       default:
         return methodNotAllowed();
     }
@@ -45,47 +46,107 @@ export async function handler(event, context) {
   }
 }
 
-// ... (keep the existing functions: createUser, deleteUser, updateUser, resetPassword)
-
-async function selfRegister(username, userData) {
-  const { password, ...attributes } = userData;
-
-  // Step 1: Sign up the user
-  const signUpParams = {
-    ClientId: clientId,
-    Username: username,
-    Password: password,
-    UserAttributes: Object.entries(attributes).map(([Name, Value]) => ({
-      Name,
-      Value,
-    })),
-  };
-
-  await cognitoClient.send(new SignUpCommand(signUpParams));
-
-  // Step 2: Confirm the user (skip email verification)
-  const confirmParams = {
+async function listUsers() {
+  const params = {
     UserPoolId: userPoolId,
-    Username: username,
   };
 
-  await cognitoClient.send(new AdminConfirmSignUpCommand(confirmParams));
+  const command = new ListUsersCommand(params);
+  const response = await cognitoClient.send(command);
 
-  return success(`User ${username} registered and confirmed successfully`);
+  const users = response.Users.map((user) => ({
+    username: user.Username,
+    attributes: user.Attributes,
+  }));
+
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(users),
+  };
 }
 
-async function createUser(username, userData) {
+async function getUser(username) {
   const params = {
     UserPoolId: userPoolId,
     Username: username,
-    TemporaryPassword: userData.temporaryPassword,
-    UserAttributes: Object.entries(userData)
-      .filter(([key]) => key !== "temporaryPassword")
-      .map(([Name, Value]) => ({ Name, Value })),
   };
 
-  await cognitoClient.send(new AdminCreateUserCommand(params));
+  const command = new AdminGetUserCommand(params);
+  const user = await cognitoClient.send(command);
+
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: user.Username,
+      attributes: user.UserAttributes,
+    }),
+  };
+}
+
+async function createUser(userData) {
+  const { username, password, ...attributes } = userData;
+
+  if (password) {
+    // Self-registration
+    const signUpParams = {
+      ClientId: clientId,
+      Username: username,
+      Password: password,
+      UserAttributes: Object.entries(attributes).map(([Name, Value]) => ({
+        Name,
+        Value,
+      })),
+    };
+
+    await cognitoClient.send(new SignUpCommand(signUpParams));
+
+    const confirmParams = {
+      UserPoolId: userPoolId,
+      Username: username,
+    };
+
+    await cognitoClient.send(new AdminConfirmSignUpCommand(confirmParams));
+  } else {
+    // Admin creation
+    const params = {
+      UserPoolId: userPoolId,
+      Username: username,
+      TemporaryPassword: generateTemporaryPassword(),
+      UserAttributes: Object.entries(attributes).map(([Name, Value]) => ({
+        Name,
+        Value,
+      })),
+    };
+
+    await cognitoClient.send(new AdminCreateUserCommand(params));
+  }
+
   return success(`User ${username} created successfully`);
+}
+
+async function updateUser(username, userData) {
+  const { password, ...attributes } = userData;
+
+  if (password) {
+    await resetPassword(username, password);
+  }
+
+  if (Object.keys(attributes).length > 0) {
+    const params = {
+      UserPoolId: userPoolId,
+      Username: username,
+      UserAttributes: Object.entries(attributes).map(([Name, Value]) => ({
+        Name,
+        Value,
+      })),
+    };
+
+    await cognitoClient.send(new AdminUpdateUserAttributesCommand(params));
+  }
+
+  return success(`User ${username} updated successfully`);
 }
 
 async function deleteUser(username) {
@@ -98,20 +159,6 @@ async function deleteUser(username) {
   return success(`User ${username} deleted successfully`);
 }
 
-async function updateUser(username, userData) {
-  const params = {
-    UserPoolId: userPoolId,
-    Username: username,
-    UserAttributes: Object.entries(userData).map(([Name, Value]) => ({
-      Name,
-      Value,
-    })),
-  };
-
-  await cognitoClient.send(new AdminUpdateUserAttributesCommand(params));
-  return success(`User ${username} updated successfully`);
-}
-
 async function resetPassword(username, newPassword) {
   const params = {
     UserPoolId: userPoolId,
@@ -121,7 +168,10 @@ async function resetPassword(username, newPassword) {
   };
 
   await cognitoClient.send(new AdminSetUserPasswordCommand(params));
-  return success(`Password for user ${username} reset successfully`);
+}
+
+function generateTemporaryPassword() {
+  return Math.random().toString(36).slice(-8);
 }
 
 function success(message) {
