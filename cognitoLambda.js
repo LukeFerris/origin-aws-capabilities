@@ -14,8 +14,8 @@ const cognitoClient = new CognitoIdentityProviderClient({
   region: "eu-central-1",
 });
 
-const userPoolId = "[SOLUTION_ID]-[CELL_ID]-UserPoolId";
-const clientId = "[SOLUTION_ID]-[CELL_ID]-UserPoolClientId";
+const userPoolId = process.env.USER_POOL_ID;
+const clientId = process.env.CLIENT_ID;
 
 export async function handler(event, context) {
   try {
