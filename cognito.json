@@ -133,14 +133,14 @@
               {
                 "Effect": "Allow",
                 "Action": [
+                  "cognito-idp:ListUsers",
+                  "cognito-idp:AdminGetUser",
                   "cognito-idp:AdminCreateUser",
                   "cognito-idp:AdminDeleteUser",
-                  "cognito-idp:AdminUpdateUserAttributes",
                   "cognito-idp:AdminSetUserPassword",
-                  "cognito-idp:SignUp",
-                  "cognito-idp:AdminConfirmSignUp",
-                  "cognito-idp:ListUsers",
-                  "cognito-idp:AdminGetUser"
+                  "cognito-idp:AdminAddUserToGroup",
+                  "cognito-idp:AdminRemoveUserFromGroup",
+                  "cognito-idp:AdminListGroupsForUser"
                 ],
                 "Resource": { "Fn::GetAtt": ["[CELL_ID]UserPool", "Arn"] }
               }
