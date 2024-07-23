@@ -134,18 +134,36 @@ async function createUser(userData) {
   const params = {
     UserPoolId: userPoolId,
     Username: username,
-    TemporaryPassword: password,
+    UserAttributes: [
+      {
+        Name: "email_verified",
+        Value: "true",
+      },
+    ],
+    MessageAction: "SUPPRESS",
   };
 
   await cognitoClient.send(new AdminCreateUserCommand(params));
 
-  await resetPassword(username, password);
+  // Set the user's password and mark the user as confirmed
+  await setUserPassword(username, password);
 
   if (groups && groups.length > 0) {
     await updateUserGroups(username, groups);
   }
 
-  return success(`User ${username} created successfully`);
+  return success(`User ${username} created and confirmed successfully`);
+}
+
+async function setUserPassword(username, password) {
+  const params = {
+    UserPoolId: userPoolId,
+    Username: username,
+    Password: password,
+    Permanent: true,
+  };
+
+  await cognitoClient.send(new AdminSetUserPasswordCommand(params));
 }
 
 async function updateUser(username, userData) {

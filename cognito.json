@@ -140,7 +140,8 @@
                   "cognito-idp:AdminSetUserPassword",
                   "cognito-idp:AdminAddUserToGroup",
                   "cognito-idp:AdminRemoveUserFromGroup",
-                  "cognito-idp:AdminListGroupsForUser"
+                  "cognito-idp:AdminListGroupsForUser",
+                  "cognito-idp:AdminConfirmSignUp"
                 ],
                 "Resource": { "Fn::GetAtt": ["[CELL_ID]UserPool", "Arn"] }
               }
