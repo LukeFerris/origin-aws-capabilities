@@ -1,4 +1,3 @@
-The following is an openAPI specification for the user administration Lambda API:
 {
   "openapi": "3.0.1",
   "info": {
