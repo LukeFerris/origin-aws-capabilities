@@ -1,22 +1,22 @@
 version = 0.1
 
-[o-[SOLUTION_ID_SHORT]-dev]
-[o-[SOLUTION_ID_SHORT]-dev.deploy]
-[o-[SOLUTION_ID_SHORT]-dev.deploy.parameters]
+[o-[SOLUTION_ID_SHORT]-[USERNAME]-[dev]
+[o-[SOLUTION_ID_SHORT]-[USERNAME]-dev.deploy]
+[o-[SOLUTION_ID_SHORT]-[USERNAME]-dev.deploy.parameters]
 aws_account_number = "360520317360"
-stack_name = "o-[SOLUTION_ID_SHORT]-dev"
-s3_prefix = "o-[SOLUTION_ID_SHORT]-dev"
+stack_name = "o-[SOLUTION_ID_SHORT]-[USERNAME]-dev"
+s3_prefix = "o-[SOLUTION_ID_SHORT]-[USERNAME]-dev"
 region = "eu-central-1"
 confirm_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM"
 disable_rollback = false
 
-[o-[SOLUTION_ID_SHORT]-prod]
-[o-[SOLUTION_ID_SHORT]-prod.deploy]
-[o-[SOLUTION_ID_SHORT]-prod.deploy.parameters]
+[o-[SOLUTION_ID_SHORT]-[USERNAME]-prod]
+[o-[SOLUTION_ID_SHORT]-[USERNAME]-prod.deploy]
+[o-[SOLUTION_ID_SHORT]-[USERNAME]-prod.deploy.parameters]
 aws_account_number = "360520317360"
-stack_name = "o-[SOLUTION_ID_SHORT]-prod"
-s3_prefix = "o-[SOLUTION_ID_SHORT]-prod"
+stack_name = "o-[SOLUTION_ID_SHORT]-[USERNAME]-prod"
+s3_prefix = "o-[SOLUTION_ID_SHORT]-[USERNAME]-prod"
 region = "eu-central-1"
 confirm_changeset = false
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM"

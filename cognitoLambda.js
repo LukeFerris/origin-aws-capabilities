@@ -10,17 +10,19 @@
  * {
  *   "username": "string",  // Required for POST, not used for PUT (derived from path)
  *   "password": "string",  // Required for POST, optional for PUT
+ *   "email": "string",     // Required for POST, optional for PUT
  *   "groups": ["string"]   // Optional. Array of group names the user should belong to
  * }
  *
  * Notes:
  * - For POST (create user):
- *   - 'username' and 'password' are required
+ *   - 'username', 'password' and 'email' are required
  *   - 'groups' is optional
  * - For PUT (update user):
  *   - 'password' is optional. If provided, it will update the user's password
  *   - 'groups' is optional. If provided, it will update the user's group memberships
- * - This implementation does not allow setting or updating other user attributes
+ *  - 'email' is optional. If provided, it will update the user's email
+ * - This implementation does not allow setting or updating other user attributes but can be extended to do so
  * - Group management is handled by adding/removing the user from specified groups
  *
  * Environment Variables:
@@ -125,16 +127,20 @@ async function getUser(username) {
 }
 
 async function createUser(userData) {
-  const { username, password, groups } = userData;
+  const { username, password, email, groups } = userData;
 
-  if (!username || !password) {
-    return badRequest("Username and password are required");
+  if (!username || !password || !email) {
+    return badRequest("Username, password and email are required");
   }
 
   const params = {
     UserPoolId: userPoolId,
     Username: username,
     UserAttributes: [
+      {
+        Name: "email",
+        Value: email,
+      },
       {
         Name: "email_verified",
         Value: "true",

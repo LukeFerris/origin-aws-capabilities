@@ -174,10 +174,6 @@
           },
           "email": {
             "type": "string"
-          },
-          "temporaryPassword": {
-            "type": "string",
-            "description": "Optional. If provided, creates user through admin creation instead of self-registration"
           }
         },
         "required": ["username"]
