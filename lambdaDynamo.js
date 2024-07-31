@@ -127,15 +127,17 @@ export async function handler(event, context) {
           };
         }
 
+        // make sure we consider the possibility of a schema change.
+        // If the attribute is not found, we default to "N/A"
         return {
           statusCode: 200,
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            companyId: result.Item.companyId.S,
-            companyName: result.Item.companyName.S,
-            address: result.Item.address.S,
+            companyId: result.Item.companyId?.S || "N/A",
+            companyName: result.Item.companyName?.S || "N/A",
+            address: result.Item.address?.S || "N/A",
           }),
         };
       } else {
@@ -147,9 +149,9 @@ export async function handler(event, context) {
         );
 
         const items = result.Items.map((item) => ({
-          companyId: item.companyId.S,
-          companyName: item.companyName.S,
-          address: item.address.S,
+          companyId: result.Item.companyId?.S || "N/A",
+          companyName: result.Item.companyName?.S || "N/A",
+          address: result.Item.address?.S || "N/A",
         }));
 
         return {
