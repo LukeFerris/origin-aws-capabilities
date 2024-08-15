@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Cognito User Management API",
-    "description": "This API allows for addition, deletion and editing (including password resets) of Cognito users. The API can be reached using the environment variable VITE_[CELL_ID]Url.",
+    "description": "This API allows for addition, deletion and editing (including password resets) of Cognito users. The API can be reached using the environment variable VITE_[CELL_ID]Url. This is the baseurl, remember to add any required paths on top of this.",
     "version": "1.0.0"
   },
   "paths": {
