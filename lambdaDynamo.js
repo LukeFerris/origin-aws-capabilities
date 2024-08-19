@@ -127,8 +127,7 @@ export async function handler(event, context) {
           };
         }
 
-        // make sure we consider the possibility of a schema change.
-        // If the attribute is not found, we default to "N/A"
+        // IMPORTANT: make sure we consider the possibility of a schema change. Some properties might be undefined and the code must be able to handle this
         return {
           statusCode: 200,
           headers: {
