@@ -1,0 +1,120 @@
+{
+  "Outputs": {
+    "[CELL_ID]BucketURL": {
+      "Description": "URL of the S3 bucket website",
+      "Value": {
+        "Fn::Sub": "https://${PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com"
+      }
+    },
+    "[CELL_ID]Url": {
+      "Description": "The HTTP API Gateway url for the created lambda",
+      "Value": {
+        "Fn::Sub": "https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+      }
+    }
+  },
+  "Resources": {
+    "[CELL_ID]PublicS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Sub": "${AWS::StackName}[LOWER_CASE_CELL_ID]bucket"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": false,
+          "IgnorePublicAcls": false,
+          "BlockPublicPolicy": false,
+          "RestrictPublicBuckets": false
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": ["*"],
+              "AllowedMethods": ["GET", "PUT"],
+              "AllowedOrigins": ["*"],
+              "MaxAge": 3600
+            }
+          ]
+        }
+      }
+    },
+    "[CELL_ID]BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Id": "S3Policy",
+          "Statement": [
+            {
+              "Sid": "RequireEncryptionInTransit",
+              "Principal": "*",
+              "Action": "*",
+              "Effect": "Deny",
+              "Resource": [
+                {
+                  "Fn::GetAtt": ["[CELL_ID]PublicS3Bucket", "Arn"]
+                },
+                { "Fn::Sub": "${[CELL_ID]PublicS3Bucket.Arn}/*" }
+              ],
+              "Condition": { "Bool": { "aws:SecureTransport": "false" } }
+            },
+            {
+              "Sid": "PublicReadGetObject",
+              "Principal": "*",
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": { "Fn::Sub": "${[CELL_ID]PublicS3Bucket.Arn}/*" }
+            }
+          ]
+        },
+        "Bucket": { "Ref": "[CELL_ID]PublicS3Bucket" }
+      }
+    },
+    "[CELL_ID]HttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": ["*"],
+          "AllowHeaders": ["*"],
+          "AllowMethods": ["*"],
+          "ExposeHeaders": ["X-Total-Count"]
+        },
+        "FailOnWarnings": true
+      }
+    },
+    "[CELL_ID]UploadUrlAPI": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${AWS::StackName}-[CELL_ID]UploadUrlAPI"
+        },
+        "CodeUri": "../../working/[CELL_ID]",
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "MemorySize": 3008,
+        "Timeout": 30,
+        "Tracing": "Active",
+        "Policies": [
+          "AWSXrayWriteOnlyAccess",
+          {
+            "S3CrudPolicy": {
+              "BucketName": { "Ref": "[CELL_ID]PublicS3Bucket" }
+            }
+          }
+        ],
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "GET",
+              "ApiId": { "Ref": "[CELL_ID]HttpApi" }
+            }
+          }
+        },
+        "Environment": {
+          "Variables": { "BUCKET_NAME": { "Ref": "[CELL_ID]PublicS3Bucket" } }
+        }
+      }
+    }
+  }
+}
