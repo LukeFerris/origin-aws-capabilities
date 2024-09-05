@@ -69,6 +69,12 @@
               "Method": "GET",
               "ApiId": {
                 "Ref": "[CELL_ID]HttpApi"
+              },
+              // Auth should only be included if you have a shown connection to a Cognito User pool
+              // AND this method should be protected. As we are conservative in our approach we assume
+              // that the method is protected unless the specification calls for otherwise.
+              "Auth": {
+                "Authorizer": "CognitoAuthorizer"
               }
             }
           }
