@@ -3,7 +3,7 @@
     "[CELL_ID]BucketURL": {
       "Description": "URL of the S3 bucket website",
       "Value": {
-        "Fn::Sub": "https://${PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com"
+        "Fn::Sub": "https://${[CELL_ID]PublicS3Bucket}.s3.${AWS::Region}.amazonaws.com"
       }
     },
     "[CELL_ID]Url": {
