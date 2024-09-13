@@ -6,6 +6,9 @@ const s3Client = new S3Client({ region: "eu-central-1" }); // do not change the 
 const bucketName = process.env.BUCKET_NAME;
 
 const handler = async (event, context) => {
+  // IMPORTANT: THERE IS NO NEED TO CHECK FOR HTTP METHOD, AS WE ARE USING API GATEWAY TO TRIGGER THE LAMBDA FUNCTION
+  // AND ANY METHOD WOULD WORK ANYWAY
+
   // Extracting the filename from the query string parameters
   const fileType = event.queryStringParameters?.fileType || "jpg";
 
