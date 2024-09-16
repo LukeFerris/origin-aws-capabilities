@@ -143,33 +143,33 @@ export async function handler(event, context) {
       };
     } else if (httpMethod === "GET") {
       try {
-        const result = await secretsManagerClient.send(
+        // Check if the secret exists
+        await secretsManagerClient.send(
           new DescribeSecretCommand({
             SecretId: secretName,
           })
         );
 
+        // If DescribeSecretCommand succeeds, the secret exists
         return {
           statusCode: 200,
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            secretName: result.Name,
-            description: result.Description,
-            lastChangedDate: result.LastChangedDate,
-            lastAccessedDate: result.LastAccessedDate,
+            secretExists: true, // Secret found
           }),
         };
       } catch (error) {
         if (error.name === "ResourceNotFoundException") {
+          // If secret is not found, return false
           return {
-            statusCode: 404,
+            statusCode: 200,
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              message: `Secret ${secretName} not found`,
+              secretExists: false, // Secret not found
             }),
           };
         } else {
