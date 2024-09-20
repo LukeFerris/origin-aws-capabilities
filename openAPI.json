@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "[CELL_ID]",
-    "description": "Replace this with a description of the API and a specific instruction that the API can be reached using the environment variable VITE_[CELL_ID]Url. This is the base URL, so remember to add any required paths on top of this.",
+    "description": "Replace this with a description of the API and a specific instruction that the API can be reached using the environment variable VITE_[CELL_ID]Url. This is the base URL, so remember to add any required paths on top of this. Do not mention authentication here.",
     "version": "1.0.0"
   },
   "x-amazon-apigateway-request-validators": {
