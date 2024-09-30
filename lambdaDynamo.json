@@ -40,23 +40,6 @@
         "DefinitionBody": "Open API specification goes here"
       }
     },
-    "[CELL_ID]500Response": {
-      "Type": "AWS::ApiGateway::GatewayResponse",
-      "Properties": {
-        "ResponseType": "DEFAULT_5XX",
-        "RestApiId": {
-          "Ref": "[CELL_ID]IHttpApi"
-        },
-        "ResponseParameters": {
-          "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
-          "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type'"
-        },
-        "ResponseTemplates": {
-          "application/json": "{\"message\": $context.error.messageString, \"error\": \"$context.error.responseBody\"}"
-        },
-        "StatusCode": "500"
-      }
-    },
     "[CELL_ID]Table": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
