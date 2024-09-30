@@ -17,7 +17,7 @@
           "AllowMethods": ["*"],
           "ExposeHeaders": ["X-Total-Count"]
         },
-        // Auth should only be included if you have a shown connection to a Cognito User pool
+        // Auth should only be included if the OpenAPI spec shows authentication
         "Auth": {
           "DefaultAuthorizer": "CognitoAuthorizer",
           "Authorizers": {
