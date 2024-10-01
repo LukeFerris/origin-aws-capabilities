@@ -1,4 +1,5 @@
 {
+  // Don't remove the outputs section it is required
   "Outputs": {
     "[CELL_ID]Url": {
       "Description": "The HTTP API Gateway url for the created lambda",
