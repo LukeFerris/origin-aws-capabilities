@@ -17,6 +17,7 @@ const tableName = process.env.TABLE_NAME; // do not change the table name - it i
 // handler
 export async function handler(event, context) {
   try {
+    // as this is an API Gateway event, this is the correct method to establish httpMethod.
     const httpMethod = event.requestContext.http.method;
 
     // checking the method is sufficient as this comes from API Gateway which has already confirmed the path
