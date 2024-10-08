@@ -14,9 +14,11 @@
   "x-amazon-apigateway-request-validator": "full",
   "paths": {
     "....": {
+      // IMPORTANT do not add a security property to paths as this is handled elsewhere
     }
   },
   "components": {
-    "....": {      
+    "....": {
+      // IMPORTANT do not add a securitySchemes component as this is handled elsewhere      
   }
 }
