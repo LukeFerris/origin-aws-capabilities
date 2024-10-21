@@ -5,6 +5,7 @@ import {
   DeleteSecretCommand,
   DescribeSecretCommand,
 } from "@aws-sdk/client-secrets-manager";
+import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // all code should use eu-central-1 region
 const secretsManagerClient = new SecretsManagerClient({
@@ -15,6 +16,9 @@ const secretName = "[SOLUTION_ID]-[CELL_ID]";
 
 // handler
 export async function handler(event, context) {
+  // Initialize structured logging with headers
+  initStructuredLoggingContext(event.headers); // IMPORTANT DO NOT REMOVE THIS
+
   try {
     const httpMethod = event.requestContext.http.method;
 

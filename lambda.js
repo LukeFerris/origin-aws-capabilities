@@ -1,8 +1,11 @@
 // An example is shown below for a javascript lambda function
-// import crypto from "crypto"; // use ES6 notation
+import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // handler
 export async function handler(event, context) {
+  // Initialize structured logging with headers
+  initStructuredLoggingContext(event.headers); // IMPORTANT DO NOT REMOVE THIS
+
   try {
     // as this is an API Gateway event, this is the correct method to establish httpMethod.
     const httpMethod = event.requestContext.http.method;

@@ -35,6 +35,7 @@
  * - PUT /users/{username} : Update an existing user
  * - DELETE /users/{username} : Delete a user
  */
+import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
 
 import {
   CognitoIdentityProviderClient,
@@ -55,6 +56,9 @@ const cognitoClient = new CognitoIdentityProviderClient({
 const userPoolId = process.env.USER_POOL_ID;
 
 export async function handler(event, context) {
+  // Initialize structured logging with headers
+  initStructuredLoggingContext(event.headers); // IMPORTANT DO NOT REMOVE THIS
+
   try {
     const httpMethod = event.requestContext.http.method;
     const path = event.requestContext.http.path;

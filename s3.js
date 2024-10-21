@@ -1,11 +1,15 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // Initialize the S3 client
 const s3Client = new S3Client({ region: "eu-central-1" }); // do not change the region from eu-central-1
 const bucketName = process.env.BUCKET_NAME;
 
 const handler = async (event, context) => {
+  // Initialize structured logging with headers
+  initStructuredLoggingContext(event.headers); // IMPORTANT DO NOT REMOVE THIS
+
   // IMPORTANT: THERE IS NO NEED TO CHECK FOR HTTP METHOD, AS WE ARE USING API GATEWAY TO TRIGGER THE LAMBDA FUNCTION
   // AND ANY METHOD WOULD WORK ANYWAY
 

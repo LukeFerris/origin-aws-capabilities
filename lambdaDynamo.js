@@ -6,6 +6,7 @@ import {
   GetItemCommand,
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
+import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // crypto can be used to generate a unique id using: crypto.randomUUID()
 import crypto from "crypto";
@@ -16,6 +17,9 @@ const tableName = process.env.TABLE_NAME; // do not change the table name - it i
 
 // handler
 export async function handler(event, context) {
+  // Initialize structured logging with headers
+  initStructuredLoggingContext(event.headers); // IMPORTANT DO NOT REMOVE THIS
+
   try {
     // as this is an API Gateway event, this is the correct method to establish httpMethod.
     const httpMethod = event.requestContext.http.method;

@@ -65,7 +65,7 @@
         "Handler": "index.handler",
         "Runtime": "nodejs18.x",
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:91"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:92"
         ],
         "Events": {
           "HttpApiGET": {
