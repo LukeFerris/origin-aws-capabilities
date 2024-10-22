@@ -93,6 +93,10 @@
         "MemorySize": 3008,
         "Timeout": 30,
         "Tracing": "Active",
+        // DO NOT REMOVE LAYERS
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:94"
+        ],
         "Policies": [
           "AWSXrayWriteOnlyAccess",
           {

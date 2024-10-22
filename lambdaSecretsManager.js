@@ -5,7 +5,7 @@ import {
   DeleteSecretCommand,
   DescribeSecretCommand,
 } from "@aws-sdk/client-secrets-manager";
-import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
+import { initStructuredLoggingContext } from "/opt/nodejs/src/responsible_for/logging/loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // all code should use eu-central-1 region
 const secretsManagerClient = new SecretsManagerClient({

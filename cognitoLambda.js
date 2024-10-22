@@ -35,7 +35,7 @@
  * - PUT /users/{username} : Update an existing user
  * - DELETE /users/{username} : Delete a user
  */
-import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
+import { initStructuredLoggingContext } from "/opt/nodejs/src/responsible_for/logging/loggingUtility.js"; // IMPORTANT: Do not remove this
 
 import {
   CognitoIdentityProviderClient,

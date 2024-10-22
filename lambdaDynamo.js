@@ -6,7 +6,7 @@ import {
   GetItemCommand,
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
-import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
+import { initStructuredLoggingContext } from "/opt/nodejs/src/responsible_for/logging/loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // crypto can be used to generate a unique id using: crypto.randomUUID()
 import crypto from "crypto";

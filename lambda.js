@@ -1,5 +1,5 @@
 // An example is shown below for a javascript lambda function
-import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
+import { initStructuredLoggingContext } from "/opt/nodejs/src/responsible_for/logging/loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // handler
 export async function handler(event, context) {

@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { initStructuredLoggingContext } from "./loggingUtility.js"; // IMPORTANT: Do not remove this
+import { initStructuredLoggingContext } from "/opt/nodejs/src/responsible_for/logging/loggingUtility.js"; // IMPORTANT: Do not remove this
 
 // Initialize the S3 client
 const s3Client = new S3Client({ region: "eu-central-1" }); // do not change the region from eu-central-1
