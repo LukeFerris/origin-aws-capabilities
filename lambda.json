@@ -59,7 +59,6 @@
         "Handler": "index.handler",
         "Runtime": "nodejs18.x",
         "Timeout": 30,
-        // DO NOT REMOVE LAYERS
         "Layers": [
           "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:94"
         ],
