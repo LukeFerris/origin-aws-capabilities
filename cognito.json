@@ -64,8 +64,9 @@
         "CodeUri": "../../working/[CELL_ID]",
         "Handler": "index.handler",
         "Runtime": "nodejs18.x",
+        // DO NOT REMOVE LAYERS
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:93"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:94"
         ],
         "Events": {
           "HttpApiGET": {
