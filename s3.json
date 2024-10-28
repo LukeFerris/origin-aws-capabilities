@@ -94,7 +94,7 @@
         "Timeout": 30,
         "Tracing": "Active",
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:94"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:96"
         ],
         "Policies": [
           "AWSXrayWriteOnlyAccess",
