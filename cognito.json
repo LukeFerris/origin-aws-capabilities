@@ -47,6 +47,63 @@
         "DefinitionBody": "Open API specification goes here"
       }
     },
+    "[CELL_ID]LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "CognitoAndDynamoDBAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cognito-idp:ListUsers",
+                    "cognito-idp:AdminGetUser",
+                    "cognito-idp:AdminCreateUser",
+                    "cognito-idp:AdminDeleteUser",
+                    "cognito-idp:AdminSetUserPassword",
+                    "cognito-idp:AdminAddUserToGroup",
+                    "cognito-idp:AdminRemoveUserFromGroup",
+                    "cognito-idp:AdminListGroupsForUser",
+                    "cognito-idp:AdminConfirmSignUp"
+                  ],
+                  "Resource": { "Fn::GetAtt": ["[CELL_ID]UserPool", "Arn"] }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query"
+                  ],
+                  "Resource": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/origin-staging-user-tracking"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "[CELL_ID]": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
@@ -125,49 +182,9 @@
             "CLIENT_ID": { "Ref": "[CELL_ID]UserPoolClient" }
           }
         },
-        "Policies": [
-          "AWSLambdaBasicExecutionRole",
-          {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "cognito-idp:ListUsers",
-                  "cognito-idp:AdminGetUser",
-                  "cognito-idp:AdminCreateUser",
-                  "cognito-idp:AdminDeleteUser",
-                  "cognito-idp:AdminSetUserPassword",
-                  "cognito-idp:AdminAddUserToGroup",
-                  "cognito-idp:AdminRemoveUserFromGroup",
-                  "cognito-idp:AdminListGroupsForUser",
-                  "cognito-idp:AdminConfirmSignUp"
-                ],
-                "Resource": { "Fn::GetAtt": ["[CELL_ID]UserPool", "Arn"] }
-              }
-            ]
-          },
-          {
-            "PolicyName": "AdditionalDynamoDBAccess",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "dynamodb:PutItem",
-                    "dynamodb:GetItem",
-                    "dynamodb:UpdateItem",
-                    "dynamodb:DeleteItem",
-                    "dynamodb:Scan",
-                    "dynamodb:Query"
-                  ],
-                  "Resource": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/origin-staging-user-tracking"
-                }
-              ]
-            }
-          }
-        ]
+        "Role": {
+          "Fn::GetAtt": ["[CELL_ID]LambdaExecutionRole", "Arn"]
+        }
       }
     },
     "[CELL_ID]UserPool": {
