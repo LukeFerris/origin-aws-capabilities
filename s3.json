@@ -96,11 +96,97 @@
         "Layers": [
           "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:96"
         ],
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "GET",
+              "ApiId": { "Ref": "[CELL_ID]HttpApi" }
+            }
+          }
+        },
+        "Environment": {
+          "Variables": { "BUCKET_NAME": { "Ref": "[CELL_ID]PublicS3Bucket" } }
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        }
+      }
+    },
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
         "Policies": [
-          "AWSXrayWriteOnlyAccess",
           {
-            "S3CrudPolicy": {
-              "BucketName": { "Ref": "[CELL_ID]PublicS3Bucket" }
+            "PolicyName": "LambdaExecutionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "secretsmanager:CreateSecret",
+                    "secretsmanager:PutSecretValue",
+                    "secretsmanager:UpdateSecret",
+                    "secretsmanager:DeleteSecret",
+                    "secretsmanager:DescribeSecret"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "AWSXrayWriteOnlyAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "xray:PutTraceSegments",
+                    "xray:PutTelemetryRecords"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "S3CrudPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:DeleteObject",
+                    "s3:ListBucket"
+                  ],
+                  "Resource": [
+                    { "Fn::Sub": "arn:aws:s3:::${[CELL_ID]PublicS3Bucket}" },
+                    { "Fn::Sub": "arn:aws:s3:::${[CELL_ID]PublicS3Bucket}/*" }
+                  ]
+                }
+              ]
             }
           },
           {
@@ -118,25 +204,12 @@
                     "dynamodb:Scan",
                     "dynamodb:Query"
                   ],
-                  "Resource": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/origin-staging-user-tracking"
+                  "Resource": "arn:aws:dynamodb:eu-central-1:360520317360:table/origin-staging-user-tracking"
                 }
               ]
             }
           }
-        ],
-        "Events": {
-          "HttpApiGET": {
-            "Type": "HttpApi",
-            "Properties": {
-              "Path": "/",
-              "Method": "GET",
-              "ApiId": { "Ref": "[CELL_ID]HttpApi" }
-            }
-          }
-        },
-        "Environment": {
-          "Variables": { "BUCKET_NAME": { "Ref": "[CELL_ID]PublicS3Bucket" } }
-        }
+        ]
       }
     }
   }
