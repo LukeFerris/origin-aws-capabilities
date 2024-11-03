@@ -20,6 +20,7 @@
         "BucketName": {
           "Fn::Sub": "${AWS::StackName}[LOWER_CASE_CELL_ID]bucket"
         },
+        "DeletionPolicy": "Retain",
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": false,
           "IgnorePublicAcls": false,
