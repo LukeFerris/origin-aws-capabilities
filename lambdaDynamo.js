@@ -1,4 +1,4 @@
-// An example is shown below for a lambda function that interacts with DynamoDB to manage a company data entity
+// An example is shown below for a lambda function that interacts with DynamoDB to manage a pet data entity
 import {
   DynamoDBClient,
   PutItemCommand,
@@ -27,13 +27,13 @@ export async function handler(event, context) {
     // checking the method is sufficient as this comes from API Gateway which has already confirmed the path
     // as such, never do any further validation checks on the path
     if (httpMethod == "POST") {
-      const { companyName, address } = JSON.parse(event.body);
+      const { petName, address } = JSON.parse(event.body);
 
-      // Check if companyName and address are provided and are not empty strings
+      // Check if petName and address are provided and are not empty strings
       if (
-        !companyName ||
+        !petName ||
         !address ||
-        companyName.trim() === "" ||
+        petName.trim() === "" ||
         address.trim() === ""
       ) {
         return {
@@ -42,18 +42,18 @@ export async function handler(event, context) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            message: "CompanyName and address are required",
+            message: "petName and address are required",
           }),
         };
       }
 
-      const companyId = crypto.randomUUID();
+      const petId = crypto.randomUUID();
       await dynamoClient.send(
         new PutItemCommand({
           TableName: tableName,
           Item: {
-            companyId: { S: companyId },
-            companyName: { S: companyName },
+            petId: { S: petId },
+            petName: { S: petName },
             address: { S: address },
           },
         })
@@ -65,8 +65,8 @@ export async function handler(event, context) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          companyId,
-          companyName,
+          petId,
+          petName,
           address,
         }),
       };
@@ -82,7 +82,7 @@ export async function handler(event, context) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            message: "companyId is required as a path parameter",
+            message: "petId is required as a path parameter",
           }),
         };
       }
@@ -91,7 +91,7 @@ export async function handler(event, context) {
         new DeleteItemCommand({
           TableName: tableName,
           Key: {
-            companyId: { S: id },
+            petId: { S: id },
           },
         })
       );
@@ -102,7 +102,7 @@ export async function handler(event, context) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: `Company with ID ${id} deleted successfully`,
+          message: `pet with ID ${id} deleted successfully`,
         }),
       };
     } else if (httpMethod == "GET") {
@@ -115,7 +115,7 @@ export async function handler(event, context) {
           new GetItemCommand({
             TableName: tableName,
             Key: {
-              companyId: { S: id },
+              petId: { S: id },
             },
           })
         );
@@ -127,7 +127,7 @@ export async function handler(event, context) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              message: `Company with ID ${id} not found`,
+              message: `pet with ID ${id} not found`,
             }),
           };
         }
@@ -139,8 +139,8 @@ export async function handler(event, context) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            companyId: result.Item.companyId?.S || "N/A",
-            companyName: result.Item.companyName?.S || "N/A",
+            petId: result.Item.petId?.S || "N/A",
+            petName: result.Item.petName?.S || "N/A",
             address: result.Item.address?.S || "N/A",
           }),
         };
@@ -153,8 +153,8 @@ export async function handler(event, context) {
         );
 
         const items = result.Items.map((item) => ({
-          companyId: result.Item.companyId?.S || "N/A",
-          companyName: result.Item.companyName?.S || "N/A",
+          petId: result.Item.petId?.S || "N/A",
+          petName: result.Item.petName?.S || "N/A",
           address: result.Item.address?.S || "N/A",
         }));
 
