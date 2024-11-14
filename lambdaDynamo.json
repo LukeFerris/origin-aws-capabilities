@@ -135,7 +135,7 @@
           }
         },
         "Role": {
-          "Fn::GetAtt": ["LambdaRole", "Arn"]
+          "Fn::GetAtt": ["LambdaRole[CELL_ID]", "Arn"]
         },
         "Environment": {
           "Variables": {
@@ -146,7 +146,7 @@
         }
       }
     },
-    "LambdaRole": {
+    "LambdaRole[CELL_ID]": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
