@@ -78,7 +78,26 @@
           "AllowMethods": ["*"],
           "ExposeHeaders": ["X-Total-Count"]
         },
-        "FailOnWarnings": true
+        "FailOnWarnings": true,
+        // Auth should only be included if the OpenAPI spec shows authentication
+        "Auth": {
+          "DefaultAuthorizer": "CognitoAuthorizer",
+          "Authorizers": {
+            "CognitoAuthorizer": {
+              "JwtConfiguration": {
+                "issuer": {
+                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${Replace with the logical id of the Cognito User Pool id as shown in connection}"
+                },
+                "audience": [
+                  {
+                    "Ref": "Replace with the logical id of the Cognito User Pool client as shown in connection"
+                  }
+                ]
+              },
+              "IdentitySource": "$request.header.Authorization"
+            }
+          }
+        }
       }
     },
     "[CELL_ID]UploadUrlAPI": {
