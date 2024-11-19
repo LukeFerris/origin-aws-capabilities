@@ -44,7 +44,7 @@
           }
         },
         "FailOnWarnings": true,
-        "DefinitionBody": "Open API specification goes here"
+        "DefinitionBody": <f>[CELL_ID]_Guidance.json</f>
       }
     },
     "[CELL_ID]LambdaExecutionRole": {
