@@ -44,7 +44,7 @@
           }
         },
         "FailOnWarnings": true,
-        "DefinitionBody": <f>[CELL_ID]_Guidance.json</f>
+        "DefinitionBody": <f>cognitoLambdaOpenAPI.json</f>
       }
     },
     "[CELL_ID]LambdaExecutionRole": {

@@ -129,11 +129,11 @@
           "Variables": { "BUCKET_NAME": { "Ref": "[CELL_ID]PublicS3Bucket" } }
         },
         "Role": {
-          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+          "Fn::GetAtt": ["LambdaRole[CELL_ID]", "Arn"]
         }
       }
     },
-    "LambdaExecutionRole": {
+    "LambdaRole[CELL_ID]": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
