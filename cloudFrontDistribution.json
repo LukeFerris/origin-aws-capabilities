@@ -11,42 +11,70 @@
         }
       }
     },
-    "PublicBucketPolicy": {
+    "PublicSiteBucketPolicy": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": {
-          "Ref": "PublicSite"
-        },
+        "Bucket": { "Ref": "PublicSite" },
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
-              "Principal": {
-                "Service": "apigateway.amazonaws.com"
-              },
+              "Principal": { "Service": "apigateway.amazonaws.com" },
               "Action": "s3:GetObject",
               "Resource": {
                 "Fn::Join": [
                   "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "PublicSite"
-                    },
-                    "/*"
-                  ]
+                  ["arn:aws:s3:::", { "Ref": "PublicSite" }, "/*"]
                 ]
               },
               "Condition": {
                 "StringEquals": {
                   "aws:SourceArn": {
-                    "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${PublicApi.ApiId}/*"
+                    "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${PublicApi}/*"
                   }
                 }
               }
             }
           ]
+        }
+      }
+    },
+    "PublicApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "PublicSiteApi",
+        "Description": "API Gateway to serve an S3 static website"
+      }
+    },
+    "PublicApiResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": { "Fn::GetAtt": ["PublicApi", "RootResourceId"] },
+        "PathPart": "{proxy+}",
+        "RestApiId": { "Ref": "PublicApi" }
+      }
+    },
+    "PublicApiMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": { "Ref": "PublicApiResource" },
+        "RestApiId": { "Ref": "PublicApi" },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS",
+          "IntegrationHttpMethod": "GET",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/{proxy}"
+          },
+          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
+          "RequestParameters": {
+            "integration.request.path.proxy": "method.request.path.proxy"
+          }
+        },
+        "RequestParameters": {
+          "method.request.path.proxy": true
         }
       }
     },
@@ -77,13 +105,7 @@
                   "Resource": {
                     "Fn::Join": [
                       "",
-                      [
-                        "arn:aws:s3:::",
-                        {
-                          "Ref": "PublicSite"
-                        },
-                        "/*"
-                      ]
+                      ["arn:aws:s3:::", { "Ref": "PublicSite" }, "/*"]
                     ]
                   }
                 }
@@ -93,87 +115,33 @@
         ]
       }
     },
-    "PublicApi": {
-      "Type": "AWS::ApiGatewayV2::Api",
+    "PublicApiDeployment": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "DependsOn": ["PublicApiMethod"],
       "Properties": {
-        "Name": "PublicSiteApi",
-        "ProtocolType": "HTTP"
-      }
-    },
-    "PublicApiStage": {
-      "Type": "AWS::ApiGatewayV2::Stage",
-      "Properties": {
-        "ApiId": {
-          "Ref": "PublicApi"
-        },
-        "StageName": "prod",
-        "AutoDeploy": true
-      }
-    },
-    "ApiIntegration": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": { "Ref": "PublicApi" },
-        "IntegrationType": "AWS",
-        "IntegrationUri": {
-          "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}"
-        },
-        "CredentialsArn": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
-        "RequestParameters": {
-          "overwrite.header.Host": {
-            "Fn::Sub": "${PublicSite}.s3.amazonaws.com"
-          }
-        },
-        "PayloadFormatVersion": "1.0"
-      }
-    },
-    "ApiRoute": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "PublicApi"
-        },
-        "RouteKey": "GET /{proxy+}",
-        "Target": {
-          "Fn::Join": [
-            "/",
-            [
-              "integrations",
-              {
-                "Ref": "ApiIntegration"
-              }
-            ]
-          ]
-        }
+        "RestApiId": { "Ref": "PublicApi" },
+        "StageName": "prod"
       }
     },
     "ApiCustomDomain": {
-      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Type": "AWS::ApiGateway::DomainName",
       "Properties": {
         "DomainName": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
-        "DomainNameConfigurations": [
-          {
-            "CertificateArn": "arn:aws:acm:eu-central-1:360520317360:certificate/95ccd728-1b70-4db5-9d23-3e871f1f25ca",
-            "EndpointType": "REGIONAL"
-          }
-        ]
-      }
-    },
-    "ApiDomainMapping": {
-      "Type": "AWS::ApiGatewayV2::ApiMapping",
-      "Properties": {
-        "DomainName": {
-          "Ref": "ApiCustomDomain"
-        },
-        "ApiId": {
-          "Ref": "PublicApi"
-        },
-        "Stage": {
-          "Ref": "PublicApiStage"
+        "RegionalCertificateArn": "arn:aws:acm:eu-central-1:360520317360:certificate/95ccd728-1b70-4db5-9d23-3e871f1f25ca",
+        "EndpointConfiguration": {
+          "Types": ["REGIONAL"]
         }
       }
     },
-    "PerEnvironmentRoute53Record": {
+    "ApiDomainMapping": {
+      "Type": "AWS::ApiGateway::BasePathMapping",
+      "Properties": {
+        "DomainName": { "Ref": "ApiCustomDomain" },
+        "RestApiId": { "Ref": "PublicApi" },
+        "Stage": "prod"
+      }
+    },
+    "Route53Record": {
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
         "HostedZoneId": "Z0774359MJ4TNSWB6K7M",
