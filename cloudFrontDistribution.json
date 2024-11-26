@@ -62,19 +62,19 @@
           "Uri": {
             "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/index.html"
           },
-          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] }
-        },
-        "IntegrationResponses": [
-          {
-            "StatusCode": "200",
-            "ResponseParameters": {
-              "method.response.header.Content-Type": "'text/html'"
-            },
-            "ResponseTemplates": {
-              "text/html": ""
+          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Content-Type": "'text/html'"
+              },
+              "ResponseTemplates": {
+                "text/html": ""
+              }
             }
-          }
-        ],
+          ]
+        },
         "MethodResponses": [
           {
             "StatusCode": "200",
