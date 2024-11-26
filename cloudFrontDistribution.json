@@ -113,16 +113,12 @@
     "ApiIntegration": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
-        "ApiId": {
-          "Ref": "PublicApi"
-        },
-        "IntegrationType": "AWS_PROXY",
+        "ApiId": { "Ref": "PublicApi" },
+        "IntegrationType": "AWS",
         "IntegrationUri": {
           "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}"
         },
-        "CredentialsArn": {
-          "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"]
-        },
+        "CredentialsArn": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
         "RequestParameters": {
           "overwrite.header.Host": {
             "Fn::Sub": "${PublicSite}.s3.amazonaws.com"
