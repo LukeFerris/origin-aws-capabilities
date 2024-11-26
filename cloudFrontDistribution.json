@@ -67,11 +67,11 @@
         "IntegrationResponses": [
           {
             "StatusCode": "200",
-            "ResponseTemplates": {
-              "text/html": ""
-            },
             "ResponseParameters": {
               "method.response.header.Content-Type": "'text/html'"
+            },
+            "ResponseTemplates": {
+              "text/html": "" // Pass HTML response as-is
             }
           }
         ],
