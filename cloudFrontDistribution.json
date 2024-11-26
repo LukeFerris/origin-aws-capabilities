@@ -100,7 +100,7 @@
                 "Fn::GetAtt": ["ApiCustomDomain", "RegionalHostedZoneId"]
               },
               "DNSName": {
-                "Fn::GetAtt": ["ApiCustomDomain", "DomainName"]
+                "Fn::GetAtt": ["ApiCustomDomain", "RegionalDomainName"]
               }
             }
           }
