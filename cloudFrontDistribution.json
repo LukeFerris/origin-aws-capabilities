@@ -71,7 +71,7 @@
               "method.response.header.Content-Type": "'text/html'"
             },
             "ResponseTemplates": {
-              "text/html": "" // Pass HTML response as-is
+              "text/html": ""
             }
           }
         ],
