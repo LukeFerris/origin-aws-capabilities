@@ -115,14 +115,21 @@
       "Type": "AWS::ApiGateway::Deployment",
       "DependsOn": ["PublicApiMethod"],
       "Properties": {
+        "RestApiId": { "Ref": "PublicApi" }
+      }
+    },
+    "PublicApiStage": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
         "RestApiId": { "Ref": "PublicApi" },
+        "DeploymentId": { "Ref": "PublicApiDeployment" },
         "StageName": "prod"
       }
     },
     "ApiCustomDomain": {
       "Type": "AWS::ApiGateway::DomainName",
       "Properties": {
-        "DomainName": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
+        "DomainName": "buildsight-maintain-pro-14097ebe.theorigin.ai",
         "RegionalCertificateArn": "arn:aws:acm:eu-central-1:360520317360:certificate/95ccd728-1b70-4db5-9d23-3e871f1f25ca",
         "EndpointConfiguration": {
           "Types": ["REGIONAL"]
@@ -143,7 +150,7 @@
         "HostedZoneId": "Z0774359MJ4TNSWB6K7M",
         "RecordSets": [
           {
-            "Name": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
+            "Name": "buildsight-maintain-pro-14097ebe.theorigin.ai",
             "Type": "A",
             "AliasTarget": {
               "HostedZoneId": {
