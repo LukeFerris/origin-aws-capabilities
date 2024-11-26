@@ -8,7 +8,7 @@
         },
         "WebsiteConfiguration": {
           "IndexDocument": "index.html",
-          "ErrorDocument": "index.html" 
+          "ErrorDocument": "index.html"
         }
       }
     },
@@ -32,7 +32,8 @@
             }
           ]
         }
-      },
+      }
+    },
     "PublicApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
@@ -145,8 +146,12 @@
             "Name": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
             "Type": "A",
             "AliasTarget": {
-              "HostedZoneId": { "Fn::GetAtt": ["ApiCustomDomain", "RegionalHostedZoneId"] },
-              "DNSName": { "Fn::GetAtt": ["ApiCustomDomain", "RegionalDomainName"] }
+              "HostedZoneId": {
+                "Fn::GetAtt": ["ApiCustomDomain", "RegionalHostedZoneId"]
+              },
+              "DNSName": {
+                "Fn::GetAtt": ["ApiCustomDomain", "RegionalDomainName"]
+              }
             }
           }
         ]
