@@ -7,7 +7,8 @@
           "Fn::Sub": "${AWS::StackName}-origin-public-site"
         },
         "WebsiteConfiguration": {
-          "IndexDocument": "index.html"
+          "IndexDocument": "index.html",
+          "ErrorDocument": "index.html"
         }
       }
     },
@@ -66,16 +67,21 @@
           "Type": "AWS",
           "IntegrationHttpMethod": "GET",
           "Uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/{proxy}"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/index.html"
           },
           "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
           "RequestParameters": {
             "integration.request.path.proxy": "method.request.path.proxy"
           }
         },
-        "RequestParameters": {
-          "method.request.path.proxy": true
-        }
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseModels": {
+              "application/json": "Empty"
+            }
+          }
+        ]
       }
     },
     "ApiGatewayS3Role": {
