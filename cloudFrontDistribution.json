@@ -8,7 +8,7 @@
         },
         "WebsiteConfiguration": {
           "IndexDocument": "index.html",
-          "ErrorDocument": "index.html"
+          "ErrorDocument": "index.html" 
         }
       }
     },
@@ -28,24 +28,16 @@
                   "",
                   ["arn:aws:s3:::", { "Ref": "PublicSite" }, "/*"]
                 ]
-              },
-              "Condition": {
-                "StringEquals": {
-                  "aws:SourceArn": {
-                    "Fn::Sub": "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${PublicApi}/*"
-                  }
-                }
               }
             }
           ]
         }
-      }
-    },
+      },
     "PublicApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Name": "PublicSiteApi",
-        "Description": "API Gateway to serve an S3 static website"
+        "Description": "API Gateway to serve a React SPA from an S3 bucket"
       }
     },
     "PublicApiResource": {
@@ -69,10 +61,7 @@
           "Uri": {
             "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/index.html"
           },
-          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
-          "RequestParameters": {
-            "integration.request.path.proxy": "method.request.path.proxy"
-          }
+          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] }
         },
         "MethodResponses": [
           {
@@ -125,7 +114,8 @@
       "Type": "AWS::ApiGateway::Deployment",
       "DependsOn": ["PublicApiMethod"],
       "Properties": {
-        "RestApiId": { "Ref": "PublicApi" }
+        "RestApiId": { "Ref": "PublicApi" },
+        "StageName": "prod"
       }
     },
     "ApiCustomDomain": {
@@ -143,15 +133,7 @@
       "Properties": {
         "DomainName": { "Ref": "ApiCustomDomain" },
         "RestApiId": { "Ref": "PublicApi" },
-        "Stage": { "Ref": "PublicApiStage" }
-      }
-    },
-    "PublicApiStage": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": { "Ref": "PublicApi" },
-        "DeploymentId": { "Ref": "PublicApiDeployment" },
-        "StageName": "prod"
+        "Stage": "prod"
       }
     },
     "Route53Record": {
@@ -163,12 +145,8 @@
             "Name": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
             "Type": "A",
             "AliasTarget": {
-              "HostedZoneId": {
-                "Fn::GetAtt": ["ApiCustomDomain", "RegionalHostedZoneId"]
-              },
-              "DNSName": {
-                "Fn::GetAtt": ["ApiCustomDomain", "RegionalDomainName"]
-              }
+              "HostedZoneId": { "Fn::GetAtt": ["ApiCustomDomain", "RegionalHostedZoneId"] },
+              "DNSName": { "Fn::GetAtt": ["ApiCustomDomain", "RegionalDomainName"] }
             }
           }
         ]
