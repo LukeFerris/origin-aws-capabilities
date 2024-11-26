@@ -136,9 +136,27 @@
     "ApiDomainMapping": {
       "Type": "AWS::ApiGateway::BasePathMapping",
       "Properties": {
-        "DomainName": { "Ref": "ApiCustomDomain" },
-        "RestApiId": { "Ref": "PublicApi" },
-        "Stage": "prod"
+        "DomainName": {
+          "Ref": "ApiCustomDomain"
+        },
+        "RestApiId": {
+          "Ref": "PublicApi"
+        },
+        "Stage": {
+          "Ref": "PublicApiStage"
+        }
+      }
+    },
+    "PublicApiStage": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "PublicApi"
+        },
+        "DeploymentId": {
+          "Ref": "PublicApiDeployment"
+        },
+        "StageName": "prod"
       }
     },
     "Route53Record": {
