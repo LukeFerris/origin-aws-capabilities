@@ -1,4 +1,5 @@
 {
+  "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
     "PublicSite": {
       "Type": "AWS::S3::Bucket",
@@ -56,6 +57,45 @@
         "ResourceId": { "Ref": "PublicApiResource" },
         "RestApiId": { "Ref": "PublicApi" },
         "AuthorizationType": "NONE",
+        "RequestParameters": {
+          "method.request.path.proxy": true
+        },
+        "Integration": {
+          "Type": "AWS",
+          "IntegrationHttpMethod": "GET",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/{proxy}"
+          },
+          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
+          "RequestParameters": {
+            "integration.request.path.proxy": "method.request.path.proxy"
+          },
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type"
+              }
+            }
+          ]
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Content-Type": true
+            }
+          }
+        ]
+      }
+    },
+    "PublicApiRootMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": { "Fn::GetAtt": ["PublicApi", "RootResourceId"] },
+        "RestApiId": { "Ref": "PublicApi" },
+        "AuthorizationType": "NONE",
         "Integration": {
           "Type": "AWS",
           "IntegrationHttpMethod": "GET",
@@ -67,10 +107,7 @@
             {
               "StatusCode": "200",
               "ResponseParameters": {
-                "method.response.header.Content-Type": "'text/html'"
-              },
-              "ResponseTemplates": {
-                "text/html": ""
+                "method.response.header.Content-Type": "integration.response.header.Content-Type"
               }
             }
           ]
@@ -78,9 +115,6 @@
         "MethodResponses": [
           {
             "StatusCode": "200",
-            "ResponseModels": {
-              "text/html": "Empty"
-            },
             "ResponseParameters": {
               "method.response.header.Content-Type": true
             }
@@ -140,7 +174,7 @@
     },
     "PublicApiDeployment": {
       "Type": "AWS::ApiGateway::Deployment",
-      "DependsOn": ["PublicApiMethod"],
+      "DependsOn": ["PublicApiMethod", "PublicApiRootMethod"],
       "Properties": {
         "RestApiId": { "Ref": "PublicApi" }
       }
