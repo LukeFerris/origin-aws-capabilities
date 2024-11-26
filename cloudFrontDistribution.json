@@ -67,7 +67,7 @@
         "DomainName": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
         "DomainNameConfigurations": [
           {
-            "CertificateArn": "arn:aws:acm:us-east-1:360520317360:certificate/b23c0b4f-7565-487f-8162-758df988aede",
+            "CertificateArn": "arn:aws:acm:eu-central-1:360520317360:certificate/95ccd728-1b70-4db5-9d23-3e871f1f25ca",
             "EndpointType": "REGIONAL"
           }
         ]
