@@ -64,11 +64,25 @@
           },
           "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] }
         },
+        "IntegrationResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseTemplates": {
+              "text/html": ""
+            },
+            "ResponseParameters": {
+              "method.response.header.Content-Type": "'text/html'"
+            }
+          }
+        ],
         "MethodResponses": [
           {
             "StatusCode": "200",
             "ResponseModels": {
-              "application/json": "Empty"
+              "text/html": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Content-Type": true
             }
           }
         ]
