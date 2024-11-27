@@ -1,5 +1,4 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
     "PublicSite": {
       "Type": "AWS::S3::Bucket",
@@ -8,221 +7,112 @@
           "Fn::Sub": "${AWS::StackName}-origin-public-site"
         },
         "WebsiteConfiguration": {
-          "IndexDocument": "index.html",
-          "ErrorDocument": "index.html"
+          "IndexDocument": "index.html"
         }
       }
     },
-    "PublicSiteBucketPolicy": {
-      "Type": "AWS::S3::BucketPolicy",
-      "Properties": {
-        "Bucket": { "Ref": "PublicSite" },
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": { "Service": "apigateway.amazonaws.com" },
-              "Action": "s3:GetObject",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  ["arn:aws:s3:::", { "Ref": "PublicSite" }, "/*"]
-                ]
-              }
-            }
-          ]
-        }
-      }
-    },
-    "PublicApi": {
-      "Type": "AWS::ApiGateway::RestApi",
-      "Properties": {
-        "Name": "PublicSiteApi",
-        "Description": "API Gateway to serve a React SPA from an S3 bucket"
-      }
-    },
-    "PublicApiResource": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": { "Fn::GetAtt": ["PublicApi", "RootResourceId"] },
-        "PathPart": "{proxy+}",
-        "RestApiId": { "Ref": "PublicApi" }
-      }
-    },
-    "PublicApiMethod": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "ANY",
-        "ResourceId": { "Ref": "PublicApiResource" },
-        "RestApiId": { "Ref": "PublicApi" },
-        "AuthorizationType": "NONE",
-        "RequestParameters": {
-          "method.request.path.proxy": true
-        },
-        "Integration": {
-          "Type": "AWS",
-          "IntegrationHttpMethod": "GET",
-          "Uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/{proxy}"
-          },
-          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
-          "RequestParameters": {
-            "integration.request.path.proxy": "method.request.path.proxy"
-          },
-          "IntegrationResponses": [
-            {
-              "StatusCode": "200",
-              "ResponseParameters": {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type"
-              }
-            }
-          ]
-        },
-        "MethodResponses": [
-          {
-            "StatusCode": "200",
-            "ResponseParameters": {
-              "method.response.header.Content-Type": true
-            }
-          }
-        ]
-      }
-    },
-    "PublicApiRootMethod": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "ANY",
-        "ResourceId": { "Fn::GetAtt": ["PublicApi", "RootResourceId"] },
-        "RestApiId": { "Ref": "PublicApi" },
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "Type": "AWS",
-          "IntegrationHttpMethod": "GET",
-          "Uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:s3:path/${PublicSite}/index.html"
-          },
-          "Credentials": { "Fn::GetAtt": ["ApiGatewayS3Role", "Arn"] },
-          "IntegrationResponses": [
-            {
-              "StatusCode": "200",
-              "ResponseParameters": {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type"
-              }
-            }
-          ]
-        },
-        "MethodResponses": [
-          {
-            "StatusCode": "200",
-            "ResponseParameters": {
-              "method.response.header.Content-Type": true
-            }
-          }
-        ]
-      }
-    },
-    "ApiGatewayS3Role": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "apigateway.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        },
-        "Policies": [
-          {
-            "PolicyName": "ApiGatewayS3AccessPolicy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": "s3:GetObject",
-                  "Resource": {
-                    "Fn::Join": [
-                      "",
-                      ["arn:aws:s3:::", { "Ref": "PublicSite" }, "/*"]
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "PolicyName": "ApiGatewayCloudWatchLoggingPolicy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
-                  "Resource": "*"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "PublicApiDeployment": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "DependsOn": ["PublicApiMethod", "PublicApiRootMethod"],
-      "Properties": {
-        "RestApiId": { "Ref": "PublicApi" }
-      }
-    },
-    "PublicApiStage": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": { "Ref": "PublicApi" },
-        "DeploymentId": { "Ref": "PublicApiDeployment" },
-        "StageName": "prod"
-      }
-    },
-    "ApiCustomDomain": {
-      "Type": "AWS::ApiGateway::DomainName",
-      "Properties": {
-        "DomainName": "buildsight-maintain-pro-14097ebe.theorigin.ai",
-        "RegionalCertificateArn": "arn:aws:acm:eu-central-1:360520317360:certificate/95ccd728-1b70-4db5-9d23-3e871f1f25ca",
-        "EndpointConfiguration": {
-          "Types": ["REGIONAL"]
-        }
-      }
-    },
-    "ApiDomainMapping": {
-      "Type": "AWS::ApiGateway::BasePathMapping",
-      "Properties": {
-        "DomainName": { "Ref": "ApiCustomDomain" },
-        "RestApiId": { "Ref": "PublicApi" },
-        "Stage": "prod"
-      }
-    },
-    "Route53Record": {
+    "PerEnvironmnetRoute53Record": {
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
         "HostedZoneId": "Z0774359MJ4TNSWB6K7M",
         "RecordSets": [
           {
-            "Name": "buildsight-maintain-pro-14097ebe.theorigin.ai",
+            "Name": "[SOLUTION_SUB_DOMAIN].theorigin.ai",
             "Type": "A",
             "AliasTarget": {
-              "HostedZoneId": {
-                "Fn::GetAtt": ["ApiCustomDomain", "RegionalHostedZoneId"]
-              },
-              "DNSName": {
-                "Fn::GetAtt": ["ApiCustomDomain", "RegionalDomainName"]
-              }
+              "HostedZoneId": "Z2FDTNDATAQYW2",
+              "DNSName": { "Fn::GetAtt": ["SiteCdn", "DomainName"] }
             }
           }
         ]
+      }
+    },
+    "SiteCdn": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "TargetOriginId": "origin-[SOLUTION_ID]-CDN",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "Enabled": true,
+          "DefaultRootObject": "index.html",
+          "PriceClass": "PriceClass_100",
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": ["PublicSite", "RegionalDomainName"]
+              },
+              "Id": "origin-[SOLUTION_ID]-CDN",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Sub": [
+                    "origin-access-identity/cloudfront/${OriginAccessIdentity}",
+                    {
+                      "OriginAccessIdentity": {
+                        "Ref": "CdnOriginAccessIdentity"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "Aliases": ["[SOLUTION_SUB_DOMAIN].theorigin.ai"],
+          "ViewerCertificate": {
+            "AcmCertificateArn": "arn:aws:acm:eu-central-1:360520317360:certificate/95ccd728-1b70-4db5-9d23-3e871f1f25ca",
+            "SslSupportMethod": "sni-only",
+            "MinimumProtocolVersion": "TLSv1"
+          }
+        }
+      }
+    },
+    "CdnOriginAccessIdentity": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Origin [SOLUTION_ID] CDN identity"
+        }
+      }
+    },
+    "PublicCdnBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "PublicSite"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CdnOriginAccessIdentity}"
+                }
+              },
+              "Action": "s3:GetObject",
+              "Resource": {
+                "Fn::Sub": [
+                  "${BucketArn}/*",
+                  {
+                    "BucketArn": {
+                      "Fn::GetAtt": ["PublicSite", "Arn"]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
       }
     }
   }
