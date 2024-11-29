@@ -113,7 +113,7 @@
         "Timeout": 30,
         "Tracing": "Active",
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:108"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:111"
         ],
         "Events": {
           "HttpApiGET": {
