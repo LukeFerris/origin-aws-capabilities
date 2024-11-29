@@ -1,0 +1,444 @@
+{
+  "Outputs": {
+    "ContactLambdaUrl": {
+      "Description": "The HTTP API Gateway url for the created lambda",
+      "Value": {
+        "Fn::Sub": "https://${ContactLambdaHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+      }
+    }
+  },
+  "Resources": {
+    "ContactLambdaHttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": ["*"],
+          "AllowHeaders": ["*"],
+          "AllowMethods": ["*"],
+          "ExposeHeaders": ["X-Total-Count"]
+        },
+        "FailOnWarnings": true,
+        "DefinitionBody": {
+          "openapi": "3.0.0",
+          "info": {
+            "title": "ContactLambda",
+            "description": "Accessible via the server url provided in the front end environment variable: VITE_ContactLambdaUrl. An API for managing contact operations including creation, retrieval, updating, and deletion of contacts.",
+            "version": "1.0.0"
+          },
+          "x-amazon-apigateway-request-validators": {
+            "full": {
+              "validateRequestBody": true,
+              "validateRequestParameters": true
+            }
+          },
+          "x-amazon-apigateway-request-validator": "full",
+          "paths": {
+            "/contacts": {
+              "get": {
+                "summary": "Get all contacts",
+                "operationId": "getAllContacts",
+                "responses": {
+                  "200": {
+                    "description": "Successful operation",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Contact"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "parameters": [
+                  {
+                    "name": "companyId",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                      "type": "string"
+                    },
+                    "description": "Filter contacts by company ID"
+                  }
+                ]
+              },
+              "post": {
+                "summary": "Create a new contact",
+                "operationId": "createContact",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ContactCreate"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "Contact created successfully, including contactName, referredById and referredByName if provided",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Contact"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/contacts/{id}": {
+              "get": {
+                "summary": "Get contact by ID",
+                "operationId": "getContactById",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "Successful operation",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Contact"
+                        }
+                      }
+                    }
+                  },
+                  "404": {
+                    "description": "Contact not found"
+                  }
+                }
+              },
+              "put": {
+                "summary": "Update an existing contact",
+                "operationId": "updateContact",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Contact"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Contact updated successfully, including contactName, referredById and referredByName if provided",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Contact"
+                        }
+                      }
+                    }
+                  },
+                  "404": {
+                    "description": "Contact not found"
+                  }
+                }
+              },
+              "delete": {
+                "summary": "Delete a contact",
+                "operationId": "deleteContact",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "Contact deleted successfully"
+                  },
+                  "404": {
+                    "description": "Contact not found"
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "Contact": {
+                "type": "object",
+                "required": ["id", "contactName", "email", "phoneNumber"],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "contactName": {
+                    "type": "string",
+                    "description": "Name of the contact"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "companyId": {
+                    "type": "string",
+                    "description": "ID of the associated company"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "description": "Name of the associated company"
+                  },
+                  "referredById": {
+                    "type": "string",
+                    "description": "ID of the referring contact"
+                  },
+                  "referredByName": {
+                    "type": "string",
+                    "description": "Name of the referring contact"
+                  }
+                }
+              },
+              "ContactCreate": {
+                "type": "object",
+                "required": ["contactName", "email", "phoneNumber"],
+                "properties": {
+                  "contactName": {
+                    "type": "string",
+                    "description": "Name of the contact"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "companyId": {
+                    "type": "string",
+                    "description": "ID of the associated company"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "description": "Name of the associated company"
+                  },
+                  "referredById": {
+                    "type": "string",
+                    "description": "ID of the referring contact"
+                  },
+                  "referredByName": {
+                    "type": "string",
+                    "description": "Name of the referring contact"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ContactLambdaTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "BillingMode": "PAY_PER_REQUEST",
+        "TableName": {
+          "Fn::Sub": "${AWS::StackName}-ContactLambda"
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          },
+          null
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ]
+      }
+    },
+    "ContactLambda": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${AWS::StackName}-ContactLambda"
+        },
+        "Description": {
+          "Fn::Sub": [
+            "Stack ${AWS::StackName} Function ${ResourceName}",
+            {
+              "ResourceName": "ContactLambda"
+            }
+          ]
+        },
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:108"
+        ],
+        "CodeUri": "../../working/ContactLambda",
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/contacts/{id}",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "ContactLambdaHttpApi"
+              }
+            }
+          },
+          "HttpApiGETMultiple": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/contacts",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "ContactLambdaHttpApi"
+              }
+            }
+          },
+          "HttpApiPUT": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/contacts/{id}",
+              "Method": "PUT",
+              "ApiId": {
+                "Ref": "ContactLambdaHttpApi"
+              }
+            }
+          },
+          "HttpApiPOST": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/contacts",
+              "Method": "POST",
+              "ApiId": {
+                "Ref": "ContactLambdaHttpApi"
+              }
+            }
+          },
+          "HttpApiDELETE": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/contacts/{id}",
+              "Method": "DELETE",
+              "ApiId": {
+                "Ref": "ContactLambdaHttpApi"
+              }
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaRoleContactLambda", "Arn"]
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "ContactLambdaTable"
+            }
+          }
+        }
+      }
+    },
+    "LambdaRoleContactLambda": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "LambdaExecutionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query"
+                  ],
+                  "Resource": {
+                    "1": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": ["ContactLambdaTable", "Arn"]
+                          },
+                          "/index/*"
+                        ]
+                      ]
+                    },
+                    "Fn::GetAtt": ["ContactLambdaTable", "Arn"]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:dynamodb:eu-central-1:360520317360:table/origin-staging-user-tracking"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
