@@ -12,9 +12,7 @@
         // the template URLs are always in the same folder
         "TemplateURL": "./FileNameShownAbove_Cloudformation.json",
         "Parameters": {
-          "Environment": {
-            "Ref": "Environment"
-          }
+          // any parameters from other nested stacks go here - there are no input parameters for the parent stack
         }
       }
     }
