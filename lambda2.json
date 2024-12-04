@@ -1,4 +1,5 @@
 {
+  // Auth parameters should only be included if authentication is in play according to the specification - otherwise, remove the parameters section
   "Parameters": {
     "Issuer": {
       "Type": "String",
