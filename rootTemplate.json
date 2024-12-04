@@ -1,0 +1,8 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Outputs": {
+    // ensure you include all outputs exposed by all nested stacks with the same name as shown in the nested stack
+  },
+  "Resources": {}
+}
