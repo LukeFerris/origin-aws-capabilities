@@ -4,5 +4,19 @@
   "Outputs": {
     // ensure you include all outputs exposed by all nested stacks with the same name as shown in the nested stack
   },
-  "Resources": {}
+  "Resources": {
+    // example resource
+    "LambdaNestedStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        // the template URLs are always in the same folder
+        "TemplateURL": "./FileNameShownAbove_Cloudformation.json",
+        "Parameters": {
+          "Environment": {
+            "Ref": "Environment"
+          }
+        }
+      }
+    }
+  }
 }
