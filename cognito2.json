@@ -1,0 +1,246 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Outputs": {
+    "[CELL_ID]Url": {
+      "Description": "The URL of the Cognito Admin Function API",
+      "Value": {
+        "Fn::Sub": "https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+      }
+    },
+    "[CELL_ID]UserPoolId": {
+      "Description": "Cognito User Pool ID",
+      "Value": { "Ref": "[CELL_ID]UserPool" }
+    },
+    "[CELL_ID]UserPoolClientId": {
+      "Description": "Cognito User Pool Client ID",
+      "Value": { "Ref": "[CELL_ID]UserPoolClient" }
+    }
+  },
+  "Resources": {
+    "[CELL_ID]HttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": ["*"],
+          "AllowHeaders": ["*"],
+          "AllowMethods": ["*"],
+          "ExposeHeaders": ["X-Total-Count"]
+        },
+        "Auth": {
+          "DefaultAuthorizer": "CognitoAuthorizer",
+          "Authorizers": {
+            "CognitoAuthorizer": {
+              "JwtConfiguration": {
+                "issuer": {
+                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${[CELL_ID]UserPool}"
+                },
+                "audience": [
+                  {
+                    "Ref": "[CELL_ID]UserPoolClient"
+                  }
+                ]
+              },
+              "IdentitySource": "$request.header.Authorization"
+            }
+          }
+        },
+        "FailOnWarnings": true,
+        "DefinitionBody": <f>cognitoLambdaOpenAPI.json</f>
+      }
+    },
+    "[CELL_ID]LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "CognitoAndDynamoDBAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cognito-idp:ListUsers",
+                    "cognito-idp:AdminGetUser",
+                    "cognito-idp:AdminCreateUser",
+                    "cognito-idp:AdminDeleteUser",
+                    "cognito-idp:AdminSetUserPassword",
+                    "cognito-idp:AdminAddUserToGroup",
+                    "cognito-idp:AdminRemoveUserFromGroup",
+                    "cognito-idp:AdminListGroupsForUser",
+                    "cognito-idp:AdminConfirmSignUp"
+                  ],
+                  "Resource": { "Fn::GetAtt": ["[CELL_ID]UserPool", "Arn"] }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query"
+                  ],
+                  "Resource": "arn:aws:dynamodb:eu-central-1:360520317360:table/origin-staging-user-tracking"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "[CELL_ID]": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "[CELL_ID]"
+        },
+        "Description": {
+          "Fn::Sub": [
+            "Stack ${AWS::StackName} Function ${ResourceName}",
+            {
+              "ResourceName": "[CELL_ID]"
+            }
+          ]
+        },
+        "CodeUri": "../../working/[CELL_ID]",
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:113"
+        ],
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/users",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiGETUser": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/users/{userId}",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiPOST": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/users",
+              "Method": "POST",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiPUT": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/users/{userId}",
+              "Method": "PUT",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          },
+          "HttpApiDELETE": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/users/{userId}",
+              "Method": "DELETE",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              }
+            }
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "USER_POOL_ID": { "Ref": "[CELL_ID]UserPool" },
+            "CLIENT_ID": { "Ref": "[CELL_ID]UserPoolClient" }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": ["[CELL_ID]LambdaExecutionRole", "Arn"]
+        }
+      }
+    },
+    "[CELL_ID]UserPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "UserPoolName": "[CELL_ID]UserPool",
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": false
+        },
+        "AutoVerifiedAttributes": ["email"],
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 8,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "RequireUppercase": true
+          }
+        }
+      }
+    },
+    "[CELL_ID]UserPoolClient": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "[CELL_ID]UserPoolClient",
+        "UserPoolId": { "Ref": "[CELL_ID]UserPool" },
+        "ExplicitAuthFlows": [
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "GenerateSecret": false
+      }
+    },
+    "CognitoUserPoolGroupAdmin": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "Admin",
+        "UserPoolId": {
+          "Ref": "[CELL_ID]UserPool"
+        },
+        "Description": "Admin group with elevated permissions",
+        "Precedence": 1
+      }
+    },
+    "CognitoUserPoolGroupUser": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "User",
+        "UserPoolId": {
+          "Ref": "[CELL_ID]UserPool"
+        },
+        "Description": "Regular user group",
+        "Precedence": 2
+      }
+    }
+  }
+}

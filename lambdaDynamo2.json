@@ -1,5 +1,17 @@
 {
-  // Don't remove the outputs section it is required
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  // Auth parameters should only be included if authentication is in play according to the specification - otherwise, remove the parameters section
+  "Parameters": {
+    "Issuer": {
+      "Type": "String",
+      "Description": "The issuer URL for the Cognito User Pool (e.g., https://cognito-idp.<region>.amazonaws.com/<user-pool-id>)"
+    },
+    "Audience": {
+      "Type": "CommaDelimitedList",
+      "Description": "The audience for the Cognito User Pool client (list of client IDs)"
+    }
+  },
   "Outputs": {
     "[CELL_ID]Url": {
       "Description": "The HTTP API Gateway url for the created lambda",
@@ -18,20 +30,18 @@
           "AllowMethods": ["*"],
           "ExposeHeaders": ["X-Total-Count"]
         },
-        // Auth should only be included if the OpenAPI spec shows authentication
+        // Auth should only be included if requested by the specification - otherwise, remove this section
         "Auth": {
           "DefaultAuthorizer": "CognitoAuthorizer",
           "Authorizers": {
             "CognitoAuthorizer": {
               "JwtConfiguration": {
                 "issuer": {
-                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${Replace with the logical id of the Cognito User Pool id as shown in connection}"
+                  "Ref": "Issuer"
                 },
-                "audience": [
-                  {
-                    "Ref": "Replace with the logical id of the Cognito User Pool client as shown in connection"
-                  }
-                ]
+                "audience": {
+                  "Ref": "Audience"
+                }
               },
               "IdentitySource": "$request.header.Authorization"
             }
