@@ -76,7 +76,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "FunctionName": {
-          "Fn::Sub": "[CELL_ID]"
+          "Fn::Sub": "[SOLUTION_ID_SHORT]-[CELL_ID]"
         },
         "Description": {
           "Fn::Sub": [
