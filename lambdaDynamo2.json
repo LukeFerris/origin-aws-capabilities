@@ -60,13 +60,13 @@
         },
         "AttributeDefinitions": [
           {
-            "AttributeName": "ExampleId",
+            "AttributeName": "AddKeyIdNameHere",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "ExampleId",
+            "AttributeName": "AddKeyIdNameHere",
             "KeyType": "HASH"
           }
         ]
