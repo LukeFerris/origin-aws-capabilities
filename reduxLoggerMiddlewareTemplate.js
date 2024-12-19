@@ -10,7 +10,7 @@ export const sendLogToAPI = (logEntry, solutionId, sessionId) => {
   const apiEndpoint = `[SESSION_TRACKING_URL]/usertracking/${solutionId}/${sessionId}`;
 
   axios
-    .post(apiEndpoint, { ...logEntry })
+    .post(apiEndpoint, { ...logEntry }, { skipLogging: true }) // Add the skipLogging flag here
     .then((response) => {})
     .catch((error) => {});
 };
@@ -71,12 +71,128 @@ const actionLoggerMiddleware = (store) => (next) => (action) => {
 };
 
 // Set up Axios interceptors for logging network requests and responses
+// Set up Axios interceptors for logging network requests and responses
 export const setupAxiosInterceptors = (solutionId) => {
   console.log("Setting up Axios interceptors");
 
   axios.defaults.headers.common["X-Correlation-ID"] = uuidv4();
   axios.defaults.headers.common["X-Solution-ID"] = solutionId;
   axios.defaults.headers.common["X-Session-ID"] = sessionId;
+
+  console.log("Adding request interceptor");
+
+  // Add a request interceptor
+  axios.interceptors.request.use(
+    (config) => {
+      // Skip logging for requests with the `skipLogging` flag
+      if (config.skipLogging) {
+        return config;
+      }
+
+      const logEntry = {
+        sessionId,
+        solutionId,
+        createdDate: new Date().toISOString(),
+        nanoDate: Date.now(),
+        itemType: "axiosRequest",
+        title: "Axios Request",
+        source: "frontend",
+        content: JSON.stringify({
+          method: config.method,
+          url: config.url,
+          headers: config.headers,
+          data: config.data,
+        }),
+      };
+
+      sendLogToAPI(logEntry, solutionId, sessionId);
+
+      return config; // Proceed with the request
+    },
+    (error) => {
+      const logEntry = {
+        sessionId,
+        solutionId,
+        createdDate: new Date().toISOString(),
+        nanoDate: Date.now(),
+        itemType: "axiosError",
+        title: "Axios Request Error",
+        source: "frontend",
+        content: JSON.stringify({
+          message: error.message,
+          stack: error.stack,
+        }),
+      };
+
+      sendLogToAPI(logEntry, solutionId, sessionId);
+
+      return Promise.reject(error); // Reject the request
+    }
+  );
+
+  console.log("Adding response interceptor");
+
+  // Add a response interceptor
+  axios.interceptors.response.use(
+    (response) => {
+      // Skip logging for requests with the `skipLogging` flag
+      if (response.config.skipLogging) {
+        return response;
+      }
+
+      const logEntry = {
+        sessionId,
+        solutionId,
+        createdDate: new Date().toISOString(),
+        nanoDate: Date.now(),
+        itemType: "axiosResponse",
+        title: "Axios Response",
+        source: "frontend",
+        content: JSON.stringify({
+          method: response.config.method,
+          url: response.config.url,
+          status: response.status,
+          headers: response.headers,
+          data: response.data,
+        }),
+      };
+
+      sendLogToAPI(logEntry, solutionId, sessionId);
+
+      return response; // Proceed with the response
+    },
+    (error) => {
+      // Skip logging for requests with the `skipLogging` flag
+      if (error.config && error.config.skipLogging) {
+        return Promise.reject(error);
+      }
+
+      const logEntry = {
+        sessionId,
+        solutionId,
+        createdDate: new Date().toISOString(),
+        nanoDate: Date.now(),
+        itemType: "axiosError",
+        title: "Axios Response Error",
+        source: "frontend",
+        content: JSON.stringify({
+          message: error.message,
+          stack: error.stack,
+          response: error.response
+            ? {
+                status: error.response.status,
+                headers: error.response.headers,
+                data: error.response.data,
+              }
+            : null,
+        }),
+      };
+
+      sendLogToAPI(logEntry, solutionId, sessionId);
+
+      return Promise.reject(error); // Reject the response
+    }
+  );
 };
 
 // Default export for Redux logger setup
