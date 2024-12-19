@@ -13,8 +13,8 @@ export const sendLogToAPI = (logEntry, solutionId, sessionId) => {
     return;
   }
 
-  // hard coded staging user tracking endpoint
-  const apiEndpoint = `https://f7mbowkmv3.execute-api.eu-central-1.amazonaws.com/usertracking/${solutionId}/${sessionId}`;
+  // endpoint added via mapping
+  const apiEndpoint = `[SESSION_TRACKING_URL]/usertracking/${solutionId}/${sessionId}`;
 
   axios
     .post(apiEndpoint, { ...logEntry })
