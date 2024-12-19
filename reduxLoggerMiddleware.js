@@ -6,13 +6,6 @@ const sessionId = uuidv4();
 
 // Function to send logs to your API (Lambda endpoint, etc.)
 export const sendLogToAPI = (logEntry, solutionId, sessionId) => {
-  const apiBaseUrl = import.meta.env.VITE_OPENAPI_URL; // Environment variable for the base API URL
-
-  if (!apiBaseUrl) {
-    console.error("API base URL is not defined in environment variables.");
-    return;
-  }
-
   // endpoint added via mapping
   const apiEndpoint = `[SESSION_TRACKING_URL]/usertracking/${solutionId}/${sessionId}`;
 
