@@ -5,7 +5,7 @@ import axios from "axios";
 const sessionId = uuidv4();
 
 // Function to send logs to your API (Lambda endpoint, etc.)
-export const sendLogToAPI = (logEntry, "[SOLUTION_ID]", sessionId) => {
+export const sendLogToAPI = (logEntry, sessionId) => {
   // endpoint added via mapping
   const apiEndpoint = `[SESSION_TRACKING_URL]/usertracking/[SOLUTION_ID]/${sessionId}`;
 
@@ -33,7 +33,7 @@ const wrapConsoleMethod = (methodName, "[SOLUTION_ID]") => {
 
     // Prevent infinite loop by avoiding logging from this method
     if (!args.some((arg) => arg?.preventTracking)) {
-      sendLogToAPI(logEntry, "[SOLUTION_ID]", sessionId);
+      sendLogToAPI(logEntry, sessionId);
     }
 
     // Call the original console method
@@ -63,7 +63,7 @@ const actionLoggerMiddleware = (store) => (next) => (action) => {
   };
 
   // Send action name to an external API
-  sendLogToAPI(logEntry, "[SOLUTION_ID]", sessionId);
+  sendLogToAPI(logEntry, sessionId);
 
   // Continue with the next middleware or reducer
   return next(action);
@@ -104,7 +104,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
         }),
       };
 
-      sendLogToAPI(logEntry, "[SOLUTION_ID]", sessionId);
+      sendLogToAPI(logEntry, sessionId);
 
       return config; // Proceed with the request
     },
@@ -123,7 +123,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
         }),
       };
 
-      sendLogToAPI(logEntry, "[SOLUTION_ID]", sessionId);
+      sendLogToAPI(logEntry, sessionId);
 
       return Promise.reject(error); // Reject the request
     }
@@ -156,7 +156,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
         }),
       };
 
-      sendLogToAPI(logEntry, "[SOLUTION_ID]", sessionId);
+      sendLogToAPI(logEntry, sessionId);
 
       return response; // Proceed with the response
     },
@@ -187,7 +187,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
         }),
       };
 
-      sendLogToAPI(logEntry, "[SOLUTION_ID]", sessionId);
+      sendLogToAPI(logEntry, sessionId);
 
       return Promise.reject(error); // Reject the response
     }
