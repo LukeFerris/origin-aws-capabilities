@@ -16,14 +16,14 @@ export const sendLogToAPI = (logEntry, sessionId) => {
 };
 
 // Wrap console methods to track logs
-const wrapConsoleMethod = (methodName, "[SOLUTION_ID]") => {
+const wrapConsoleMethod = (methodName) => {
   const originalMethod = console[methodName];
 
   console[methodName] = (...args) => {
     const logEntry = {
       content: args,
       sessionId,
-      "[SOLUTION_ID]",
+      solutionId: "[SOLUTION_ID]",
       createdDate: new Date().toISOString(),
       nanoDate: Date.now(),
       itemType: "consoleLog",
@@ -42,7 +42,7 @@ const wrapConsoleMethod = (methodName, "[SOLUTION_ID]") => {
 };
 
 // Function to set up tracking for console logs
-export const setupConsoleLogTracking = ("[SOLUTION_ID]") => {
+export const setupConsoleLogTracking = () => {
   ["log", "error", "warn", "info", "debug"].forEach((method) =>
     wrapConsoleMethod(method, "[SOLUTION_ID]")
   );
@@ -50,11 +50,10 @@ export const setupConsoleLogTracking = ("[SOLUTION_ID]") => {
 
 // Middleware for Redux actions
 const actionLoggerMiddleware = (store) => (next) => (action) => {
-
   const logEntry = {
     content: action,
     sessionId,
-    "[SOLUTION_ID]",
+    solutionId: "[SOLUTION_ID]",
     createdDate: new Date().toISOString(),
     nanoDate: Date.now(),
     itemType: "reduxAction",
@@ -71,7 +70,7 @@ const actionLoggerMiddleware = (store) => (next) => (action) => {
 
 // Set up Axios interceptors for logging network requests and responses
 // Set up Axios interceptors for logging network requests and responses
-export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
+export const setupAxiosInterceptors = () => {
   console.log("Setting up Axios interceptors");
 
   axios.defaults.headers.common["X-Correlation-ID"] = uuidv4();
@@ -90,7 +89,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
 
       const logEntry = {
         sessionId,
-        "[SOLUTION_ID]",
+        solutionId: "[SOLUTION_ID]",
         createdDate: new Date().toISOString(),
         nanoDate: Date.now(),
         itemType: "axiosRequest",
@@ -111,7 +110,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
     (error) => {
       const logEntry = {
         sessionId,
-        "[SOLUTION_ID]",
+        solutionId: "[SOLUTION_ID]",
         createdDate: new Date().toISOString(),
         nanoDate: Date.now(),
         itemType: "axiosError",
@@ -141,7 +140,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
 
       const logEntry = {
         sessionId,
-        "[SOLUTION_ID]",
+        solutionId: "[SOLUTION_ID]",
         createdDate: new Date().toISOString(),
         nanoDate: Date.now(),
         itemType: "axiosResponse",
@@ -168,7 +167,7 @@ export const setupAxiosInterceptors = ("[SOLUTION_ID]") => {
 
       const logEntry = {
         sessionId,
-        "[SOLUTION_ID]",
+        solutionId: "[SOLUTION_ID]",
         createdDate: new Date().toISOString(),
         nanoDate: Date.now(),
         itemType: "axiosError",
