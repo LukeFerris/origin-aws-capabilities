@@ -7,9 +7,7 @@ const sessionId = uuidv4();
 // Function to send logs to your API (Lambda endpoint, etc.)
 export const sendLogToAPI = (logEntry, "[SOLUTION_ID]", sessionId) => {
   // endpoint added via mapping
-  const apiEndpoint = `[SESSION_TRACKING_URL]/usertracking/${[
-    SOLUTION_ID,
-  ]}/${sessionId}`;
+  const apiEndpoint = `[SESSION_TRACKING_URL]/usertracking/${[SOLUTION_ID]}/${sessionId}`;
 
   axios
     .post(apiEndpoint, { ...logEntry }, { skipLogging: true }) // Add the skipLogging flag here
