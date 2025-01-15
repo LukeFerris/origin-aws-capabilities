@@ -31,7 +31,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${AWS::StackName}[LOWER_CASE_CELL_ID]bucket"
+          "Fn::Sub": "[SOLUTION_ID_SHORT]-[LOWER_CASE_CELL_ID]s3"
         },
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": false,
