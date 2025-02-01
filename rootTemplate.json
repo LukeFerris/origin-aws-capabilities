@@ -3,6 +3,7 @@
   "Transform": "AWS::Serverless-2016-10-31",
   "Outputs": {
     // ensure you include all outputs exposed by all nested stacks with the same name as shown in the nested stack
+    // never include any outputs NOT exposed by the nested stacks
     // example (note the specific Fn::Sub syntax):
     // "AwsCognitoUrl": {
     //   "Description": "The URL of the Cognito Admin Function API",
