@@ -4,7 +4,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${AWS::StackName}-origin-public-site"
+          "Fn::Sub": "[SOLUTION_ID_SHORT]-[LOWER_CASE_CELL_ID]s3"
         },
         "WebsiteConfiguration": {
           "IndexDocument": "index.html"
