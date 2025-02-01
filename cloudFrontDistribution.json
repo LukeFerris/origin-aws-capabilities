@@ -115,5 +115,11 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "CloudFrontDistributionId": {
+      "Description": "CloudFront Distribution ID",
+      "Value": { "Ref": "SiteCdn" }
+    }
   }
 }
