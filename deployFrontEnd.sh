@@ -44,7 +44,7 @@ vite build --mode prod
 cd prod/
 
 # Sync built files to the S3 bucket
-aws s3 sync . s3://[SOLUTION_ID_SHORT]-[LOWER_CASE_CELL_ID]s3/
+aws s3 sync . s3://[SOLUTION_ID_SHORT]-productioncloudfronts3/
 
 # Invalidate the CloudFront cache
 aws cloudfront create-invalidation --distribution-id="$CLOUDFRONT_DISTRIBUTION_ID" --paths "/"
