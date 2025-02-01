@@ -4,11 +4,11 @@
 REGION="eu-central-1"
 PARENT_STACK="o-[SOLUTION_ID_SHORT]-[USERNAME_LOWER]-prod"
 
-# Find the nested stack containing SiteCdn
+# Find the nested stack that contains CloudFront (assuming it has 'CloudFront' in its name)
 NESTED_STACK=$(aws cloudformation list-stack-resources \
     --region $REGION \
     --stack-name $PARENT_STACK \
-    --query "StackResourceSummaries[?LogicalResourceId=='SiteCdn'].PhysicalResourceId" \
+    --query "StackResourceSummaries[?ResourceType=='AWS::CloudFormation::Stack' && contains(PhysicalResourceId, 'CloudFront')].PhysicalResourceId" \
     --output text)
 
 # Ensure the nested stack was found
@@ -19,7 +19,7 @@ fi
 
 echo "Found nested stack: $NESTED_STACK"
 
-# Get CloudFront Distribution ID from the nested stack
+# Now find CloudFront Distribution ID from the nested stack
 CLOUDFRONT_DISTRIBUTION_ID=$(aws cloudformation describe-stack-resources \
     --region $REGION \
     --stack-name "$NESTED_STACK" \
