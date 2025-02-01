@@ -9,5 +9,5 @@ vite build --mode prod
 
 cd prod/
 
-aws s3 sync . s3://o-[SOLUTION_ID_SHORT]-[USERNAME_LOWER]-prod-origin-public-site/
+aws s3 sync . s3://[SOLUTION_ID_SHORT]-[LOWER_CASE_CELL_ID]s3/
 aws cloudfront create-invalidation --distribution-id=$CLOUDFRONT_DISTRIBUTION_ID --paths="/"
