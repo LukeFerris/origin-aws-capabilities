@@ -1,6 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
+  "Parameters": {
+    "RootStackName": {
+      "Type": "String",
+      "Description": "The name of the root stack"
+    }
+  },
   "Outputs": {
     "[CELL_ID]Url": {
       "Description": "The URL of the Cognito Admin Function API",
@@ -110,7 +116,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "FunctionName": {
-          "Fn::Sub": "[SOLUTION_ID_SHORT]-[CELL_ID]"
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Lambda"
         },
         "Description": {
           "Fn::Sub": [
@@ -192,7 +198,7 @@
     "[CELL_ID]UserPool": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
-        "UserPoolName": "[CELL_ID]UserPool",
+        "UserPoolName": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]UP",
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": false
         },
@@ -211,7 +217,7 @@
     "[CELL_ID]UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-        "ClientName": "[CELL_ID]UserPoolClient",
+        "ClientName": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Client",
         "UserPoolId": { "Ref": "[CELL_ID]UserPool" },
         "ExplicitAuthFlows": [
           "ALLOW_USER_SRP_AUTH",

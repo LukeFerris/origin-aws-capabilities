@@ -1,10 +1,16 @@
 {
+  "Parameters": {
+    "RootStackName": {
+      "Type": "String",
+      "Description": "The name of the root stack"
+    }
+  },
   "Resources": {
     "PublicSite": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "[SOLUTION_ID_SHORT]-[LOWER_CASE_CELL_ID]s3"
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]"
         },
         "WebsiteConfiguration": {
           "IndexDocument": "index.html"

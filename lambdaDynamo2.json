@@ -1,8 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  // Auth parameters should only be included if authentication is in play according to the specification - otherwise, remove the parameters section
   "Parameters": {
+    "RootStackName": {
+      "Type": "String",
+      "Description": "The name of the root stack"
+    },
+    // Auth parameters should only be included if authentication is in play according to the specification - otherwise, remove the parameters section
     "Issuer": {
       "Type": "String",
       "Description": "The issuer URL for the Cognito User Pool (e.g., https://cognito-idp.<region>.amazonaws.com/<user-pool-id>)"
@@ -56,7 +60,7 @@
       "Properties": {
         "BillingMode": "PAY_PER_REQUEST",
         "TableName": {
-          "Fn::Sub": "${AWS::StackName}-[CELL_ID]"
+          "Fn::Sub": "${RootStackName}-[CELL_ID]"
         },
         "AttributeDefinitions": [
           {
@@ -76,7 +80,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "FunctionName": {
-          "Fn::Sub": "[SOLUTION_ID_SHORT]-[CELL_ID]"
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Lambda"
         },
         "Description": {
           "Fn::Sub": [

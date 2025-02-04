@@ -2,7 +2,7 @@
 
 # Set AWS region and dynamic stack name
 REGION="eu-central-1"
-PARENT_STACK="o-[SOLUTION_ID_SHORT]-[USERNAME_LOWER]-prod"
+PARENT_STACK="o[SOLUTION_ID_SHORT]-[USERNAME_LOWER_LAST3]-p"
 
 # Find the nested stack that contains CloudFront (assuming it has 'CloudFront' in its name)
 NESTED_STACK=$(aws cloudformation list-stack-resources \

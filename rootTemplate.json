@@ -13,13 +13,17 @@
     // },
   },
   "Resources": {
-    // example resource
-    "LambdaNestedStack": {
+    // example resource - always use single letter names for nested stacks e.g. A, B, C, D
+    "A": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         // the template URLs are always in the same folder
         "TemplateURL": "./FileNameShownAbove_Cloudformation.json",
         "Parameters": {
+          // we always include the root stack name as a parameter for all nested stacks - make sure you add it for all nested stacks,
+          "RootStackName": {
+            "Ref": "AWS::StackName"
+          }
           // any parameters from other nested stacks go here - there are no input parameters for the parent stack
           // note the use of Fn::Sub to extract the nested stack output
           // An example is:

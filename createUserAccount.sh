@@ -38,7 +38,7 @@ find_user_pool_id() {
 }
 
 # Main Script
-PARENT_STACK_NAME="o-[SOLUTION_ID_SHORT]-[USERNAME_LOWER]-[MODE]"
+PARENT_STACK_NAME="o[SOLUTION_ID_SHORT]-[USERNAME_LOWER_LAST3]-[MODE_FIRST]"
 
 # Find UserPool ID
 if find_user_pool_id "$PARENT_STACK_NAME"; then
