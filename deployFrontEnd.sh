@@ -56,7 +56,7 @@ else
     cd prod/
 
     # Sync built files to the S3 bucket
-    aws s3 sync . s3://[SOLUTION_ID_SHORT]-productioncloudfronts3/
+    aws s3 sync . s3://$PARENT_STACK-produ/
 
     # Invalidate the CloudFront cache
     aws cloudfront create-invalidation --distribution-id="$SITECDN_PHYSICAL_ID" --paths "/"
