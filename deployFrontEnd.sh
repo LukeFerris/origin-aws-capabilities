@@ -4,49 +4,63 @@
 REGION="eu-central-1"
 PARENT_STACK="o[SOLUTION_ID_SHORT]-[USERNAME_LOWER_LAST3]-p"
 
-# Find the nested stack that contains the SiteCdn resource
-NESTED_STACK=$(aws cloudformation list-stack-resources \
+# 1) Get all nested stacks (Physical IDs) from the parent
+NESTED_STACKS=$(aws cloudformation list-stack-resources \
     --region "$REGION" \
     --stack-name "$PARENT_STACK" \
-    --query "StackResourceSummaries[?LogicalResourceId=='SiteCdn'].PhysicalResourceId" \
-    --output text)
+    --query "StackResourceSummaries[?ResourceType=='AWS::CloudFormation::Stack'].PhysicalResourceId" \
+    --output text
+)
 
-# Ensure the nested stack was found
-if [[ -z "$NESTED_STACK" ]]; then
-    echo "Error: Could not find the nested stack containing SiteCdn. Exiting."
+if [[ -z "$NESTED_STACKS" ]]; then
+    echo "Error: No nested stacks found in parent stack '$PARENT_STACK'."
     exit 1
 fi
 
-echo "Found nested stack: $NESTED_STACK"
+# 2) Iterate through each nested stack to find 'SiteCdn'
+FOUND_STACK=""
+SITECDN_PHYSICAL_ID=""
 
-# Now find CloudFront Distribution ID from the nested stack
-CLOUDFRONT_DISTRIBUTION_ID=$(aws cloudformation describe-stack-resources \
-    --region "$REGION" \
-    --stack-name "$NESTED_STACK" \
-    --query "StackResources[?LogicalResourceId=='SiteCdn'].PhysicalResourceId" \
-    --output text)
+for STACK in $NESTED_STACKS; do
+    # Check if this nested stack has a resource with LogicalResourceId == 'SiteCdn'
+    RESULT=$(aws cloudformation list-stack-resources \
+        --region "$REGION" \
+        --stack-name "$STACK" \
+        --query "StackResourceSummaries[?LogicalResourceId=='SiteCdn'].PhysicalResourceId" \
+        --output text 2>/dev/null
+    )
 
-# Ensure the CloudFront distribution ID was found before proceeding
-if [[ -z "$CLOUDFRONT_DISTRIBUTION_ID" ]]; then
-    echo "Error: Could not retrieve CloudFront distribution ID. Exiting."
+    # If RESULT is not "None" and not empty, we've found the right stack
+    if [[ "$RESULT" != "None" && -n "$RESULT" ]]; then
+        FOUND_STACK="$STACK"
+        SITECDN_PHYSICAL_ID="$RESULT"
+        break
+    fi
+done
+
+# 3) If not found, exit; else print info
+if [[ -z "$FOUND_STACK" ]]; then
+    echo "Error: Could not find any nested stack containing a resource with LogicalResourceId 'SiteCdn'."
     exit 1
+else
+    echo "Nested stack containing SiteCdn: $FOUND_STACK"
+    echo "SiteCdn Physical Resource ID: $SITECDN_PHYSICAL_ID"
+
+    # Navigate to the React project directory
+    cd ../../react-website/
+
+    # Build the React project using Vite
+    vite build --mode prod
+
+    # Change to the production directory
+    cd prod/
+
+    # Sync built files to the S3 bucket
+    aws s3 sync . s3://[SOLUTION_ID_SHORT]-productioncloudfronts3/
+
+    # Invalidate the CloudFront cache
+    aws cloudfront create-invalidation --distribution-id="$SITECDN_PHYSICAL_ID" --paths "/"
+
+    echo "Deployment complete!"
+
 fi
-
-echo "CloudFront Distribution ID: $CLOUDFRONT_DISTRIBUTION_ID"
-
-# Navigate to the React project directory
-cd ../../react-website/ || exit
-
-# Build the React project using Vite
-vite build --mode prod
-
-# Change to the production directory
-cd prod/ || exit
-
-# Sync built files to the S3 bucket
-aws s3 sync . s3://[SOLUTION_ID_SHORT]-productioncloudfronts3/
-
-# Invalidate the CloudFront cache
-aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/*"
-
-echo "Deployment complete!"
