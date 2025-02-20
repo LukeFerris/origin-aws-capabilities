@@ -35,7 +35,7 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": {
-          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Lambda"
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]"
         },
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": false,
