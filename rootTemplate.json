@@ -23,7 +23,7 @@
           // we always include the root stack name as a parameter for all nested stacks - make sure you add it for all nested stacks
           // Note that the root should be the AWS::StackName plus the letter of the nested stack (to make it unique)
           "RootStackName": {
-            "Fn::Sub": "${AWS::StackName}"
+            "Fn::Sub": "${AWS::StackName}-A-"
           }
           // any parameters from other nested stacks go here - there are no input parameters for the parent stack
           // note the use of Fn::Sub to extract the nested stack output
