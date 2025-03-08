@@ -186,7 +186,8 @@
         "Environment": {
           "Variables": {
             "USER_POOL_ID": { "Ref": "[CELL_ID]UserPool" },
-            "CLIENT_ID": { "Ref": "[CELL_ID]UserPoolClient" }
+            "CLIENT_ID": { "Ref": "[CELL_ID]UserPoolClient" },
+            "SESSION_TABLE": "[SESSION_TRACKING_TABLE_NAME]"
           }
         },
         "Role": {

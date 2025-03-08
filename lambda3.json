@@ -71,6 +71,11 @@
         "CodeUri": "../../working/[CELL_ID]",
         "Handler": "index.handler",
         "Runtime": "nodejs18.x",
+        "Environment": {
+          "Variables": {
+            "SESSION_TABLE": "[SESSION_TRACKING_TABLE_NAME]"
+          }
+        },
         "Timeout": 30,
         "Layers": [
           "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:113"
@@ -137,7 +142,7 @@
                     "dynamodb:Query"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:dynamodb:eu-central-1:360520317360:table/origin-staging-user-tracking"
+                    "Fn::Sub": "arn:aws:dynamodb:eu-central-1:360520317360:table/[SESSION_TRACKING_TABLE_NAME]"
                   }
                 }
               ]

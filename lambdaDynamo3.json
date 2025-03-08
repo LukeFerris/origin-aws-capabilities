@@ -154,7 +154,8 @@
           "Variables": {
             "TABLE_NAME": {
               "Ref": "[CELL_ID]Table"
-            }
+            },
+            "SESSION_TABLE": "[SESSION_TRACKING_TABLE_NAME]"
           }
         }
       }
