@@ -74,7 +74,7 @@
         "Runtime": "nodejs18.x",
         "Timeout": 30,
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:113"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:159"
         ],
         "Events": {
           "HttpApiGET": {

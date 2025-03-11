@@ -295,7 +295,7 @@
           ]
         },
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:113"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:159"
         ],
         "CodeUri": "../../working/ContactLambda",
         "Handler": "index.handler",

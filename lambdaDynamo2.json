@@ -91,7 +91,7 @@
           ]
         },
         "Layers": [
-          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:113"
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:159"
         ],
         "CodeUri": "../../working/[CELL_ID]",
         "Handler": "index.handler",
