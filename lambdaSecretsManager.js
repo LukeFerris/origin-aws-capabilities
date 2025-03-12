@@ -40,62 +40,18 @@ export async function handler(event, context) {
         };
       }
 
-      let secretExists = false;
-      try {
-        // Check if the secret exists
-        await secretsManagerClient.send(
-          new DescribeSecretCommand({
-            SecretId: secretName,
-          })
-        );
-        secretExists = true;
-      } catch (error) {
-        if (error.name !== "ResourceNotFoundException") {
-          throw error;
-        }
-      }
+      await createOrUpdate(secretValue);
 
-      if (secretExists) {
-        console.log("Secret already exists, so updating.");
-        // Update the secret if it exists
-        await secretsManagerClient.send(
-          new PutSecretValueCommand({
-            SecretId: secretName,
-            SecretString: secretValue,
-          })
-        );
-
-        return {
-          statusCode: 200,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: `Secret ${secretName} updated successfully`,
-            secretValue,
-          }),
-        };
-      } else {
-        console.log("Secret does not exist, so creating.");
-        // Create a new secret if it does not exist
-        await secretsManagerClient.send(
-          new CreateSecretCommand({
-            Name: secretName,
-            SecretString: secretValue,
-          })
-        );
-
-        return {
-          statusCode: 200,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: `Secret ${secretName} created successfully`,
-            secretValue,
-          }),
-        };
-      }
+      return {
+        statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `Secret ${secretName} created/updated successfully`,
+          secretValue,
+        }),
+      };
     } else if (httpMethod === "PUT") {
       const { secretValue } = JSON.parse(event.body);
 
@@ -112,12 +68,7 @@ export async function handler(event, context) {
         };
       }
 
-      await secretsManagerClient.send(
-        new PutSecretValueCommand({
-          SecretId: secretName,
-          SecretString: secretValue,
-        })
-      );
+      await createOrUpdate(secretValue);
 
       return {
         statusCode: 200,
@@ -200,4 +151,44 @@ export async function handler(event, context) {
       }),
     };
   }
+}
+
+async function createOrUpdate(secretValue) {
+  let secretExists = false;
+
+  try {
+    // Check if the secret exists
+    await secretsManagerClient.send(
+      new DescribeSecretCommand({
+        SecretId: secretName,
+      })
+    );
+    secretExists = true;
+  } catch (error) {
+    if (error.name !== "ResourceNotFoundException") {
+      throw error;
+    }
+  }
+
+  if (secretExists) {
+    console.log("Secret already exists, so updating.");
+    // Update the secret if it exists
+    await secretsManagerClient.send(
+      new PutSecretValueCommand({
+        SecretId: secretName,
+        SecretString: secretValue,
+      })
+    );
+  } else {
+    console.log("Secret does not exist, so creating.");
+    // Create a new secret if it does not exist
+    await secretsManagerClient.send(
+      new CreateSecretCommand({
+        Name: secretName,
+        SecretString: secretValue,
+      })
+    );
+  }
+
+  return;
 }
