@@ -14,8 +14,8 @@
     // },
   },
   "Resources": {
-    // example resource - always use single letter names for nested stacks e.g. A, B, C, D
-    "A": {
+    // example resource - always use single lower case letter names for nested stacks e.g. a, b, c, d.
+    "a": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         // the template URLs are always in the same folder
