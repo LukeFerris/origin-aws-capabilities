@@ -1,6 +1,9 @@
 // An example is shown below for a javascript lambda function
 import { initStructuredLoggingContext } from "/opt/nodejs/src/responsible_for/logging/loggingUtility.js"; // IMPORTANT: Do not remove this
 
+// crypto can be used to generate a unique id where they are required using: crypto.randomUUID()
+// import crypto from "crypto";
+
 // handler
 export async function handler(event, context) {
   // Initialize structured logging with headers
