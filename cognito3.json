@@ -198,7 +198,9 @@
     "[CELL_ID]UserPool": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
-        "UserPoolName": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]UP",
+        "UserPoolName": {
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]UP"
+        },
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": false
         },
@@ -217,7 +219,9 @@
     "[CELL_ID]UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-        "ClientName": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Client",
+        "ClientName": {
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Client"
+        },
         "UserPoolId": { "Ref": "[CELL_ID]UserPool" },
         "ExplicitAuthFlows": [
           "ALLOW_USER_SRP_AUTH",
