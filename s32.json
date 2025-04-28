@@ -238,7 +238,7 @@
                     "dynamodb:Scan",
                     "dynamodb:Query"
                   ],
-                  "Resource": "arn:aws:dynamodb:eu-central-1:360520317360:table/origin-staging-user-tracking"
+                  "Resource": "arn:aws:dynamodb:eu-central-1:360520317360:table/hydra-origin-user-tracking"
                 }
               ]
             }
