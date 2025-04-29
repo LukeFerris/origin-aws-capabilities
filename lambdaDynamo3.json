@@ -134,6 +134,10 @@
               "ApiId": {
                 "Ref": "[CELL_ID]HttpApi"
               }
+              // Individual authorization can be set here if needed e.g. for public POST
+              // "Auth": {
+              //   "Authorizer": "NONE"
+              // }
             }
           },
           "HttpApiDELETE": {

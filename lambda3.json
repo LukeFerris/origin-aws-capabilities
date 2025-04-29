@@ -92,6 +92,10 @@
               "Auth": {
                 "Authorizer": "CognitoAuthorizer"
               }
+              // Can also be different to the detault authorizer e.g. for public POST
+              // "Auth": {
+              //   "Authorizer": "NONE"
+              // }
             }
           }
         },
