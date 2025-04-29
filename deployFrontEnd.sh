@@ -2,7 +2,7 @@
 
 # Set AWS region and dynamic stack name
 REGION="eu-central-1"
-PARENT_STACK="o[SOLUTION_ID_SHORT]-[USERNAME_LOWER_LAST3]-p"
+PARENT_STACK="$PARENT_STACK_NAME"
 
 # 1) Get all nested stacks (Physical IDs) from the parent
 NESTED_STACKS=$(aws cloudformation list-stack-resources \
