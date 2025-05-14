@@ -39,6 +39,7 @@ find_user_pool_id() {
 
 # Parent stack is now injected by the script runner
 PARENT_STACK_NAME="$PARENT_STACK_NAME"
+echo "PARENT_STACK_NAME = $PARENT_STACK_NAME"
 
 # Find UserPool ID
 if find_user_pool_id "$PARENT_STACK_NAME"; then
