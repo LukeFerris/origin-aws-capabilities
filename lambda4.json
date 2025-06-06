@@ -1,0 +1,173 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Parameters": {
+    "RootStackName": {
+      "Type": "String",
+      "Description": "The name of the root stack"
+    },
+    // Auth parameters should only be included if authentication is in play according to the specification - otherwise, remove the parameters section
+    "Issuer": {
+      "Type": "String",
+      "Description": "The issuer URL for the Cognito User Pool (e.g., https://cognito-idp.<region>.amazonaws.com/<user-pool-id>)"
+    },
+    "Audience": {
+      "Type": "CommaDelimitedList",
+      "Description": "The audience for the Cognito User Pool client (list of client IDs)"
+    }
+  },
+  "Outputs": {
+    "[CELL_ID]Url": {
+      "Description": "The HTTP API Gateway url for the created lambda",
+      "Value": {
+        "Fn::Sub": "https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+      }
+    }
+  },
+  "Resources": {
+    "[CELL_ID]HttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": ["*"],
+          "AllowHeaders": ["*"],
+          "AllowMethods": ["*"],
+          "ExposeHeaders": ["X-Total-Count"]
+        },
+        // Auth should only be included if requested by the specification - otherwise, remove this section
+        "Auth": {
+          "DefaultAuthorizer": "CognitoAuthorizer",
+          "Authorizers": {
+            "CognitoAuthorizer": {
+              "JwtConfiguration": {
+                "issuer": {
+                  "Ref": "Issuer"
+                },
+                "audience": {
+                  "Ref": "Audience"
+                }
+              },
+              "IdentitySource": "$request.header.Authorization"
+            }
+          }
+        },
+        "FailOnWarnings": true
+      }
+    },
+    "[CELL_ID]": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${RootStackName}-[LOWER_CASE_CELL_ID_MAX5]Lambda"
+        },
+        "Description": {
+          "Fn::Sub": [
+            "Stack ${AWS::StackName} Function ${ResourceName}",
+            {
+              "ResourceName": "[CELL_ID]"
+            }
+          ]
+        },
+        "CodeUri": "../../working/[CELL_ID]",
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Environment": {
+          "Variables": {
+            "SESSION_TABLE": "[SESSION_TRACKING_TABLE_NAME]"
+          }
+        },
+        "Timeout": 30,
+        "Layers": [
+          "arn:aws:lambda:eu-central-1:360520317360:layer:generalLayer:159",
+          {
+            "Ref": "[CELL_ID]Layer"
+          }
+        ],
+        "Events": {
+          "HttpApiGET": {
+            "Type": "HttpApi",
+            "Properties": {
+              "Path": "/",
+              "Method": "GET",
+              "ApiId": {
+                "Ref": "[CELL_ID]HttpApi"
+              },
+              "Auth": {
+                "Authorizer": "CognitoAuthorizer"
+              }
+              // Can also be different to the detault authorizer e.g. for public POST
+              // "Auth": {
+              //   "Authorizer": "NONE"
+              // }
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": ["GetSecretLambdaExecutionRole", "Arn"]
+        }
+      }
+    },
+    "[CELL_ID]Layer": {
+      "Type": "AWS::Serverless::LayerVersion",
+      "Properties": {
+        "LayerName": "[CELL_ID]Layer",
+        "Description": "Required packages for the [CELL_ID] Lambda function",
+        "ContentUri": "../../working/[CELL_ID]/layer",
+        "CompatibleRuntimes": ["nodejs18.x"],
+        "LicenseInfo": "MIT",
+        "RetentionPolicy": "Retain"
+      }
+    },
+    "GetSecretLambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "LambdaExecutionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:dynamodb:eu-central-1:360520317360:table/[SESSION_TRACKING_TABLE_NAME]"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
