@@ -24,7 +24,7 @@
       }
     },
     "[CELL_ID]Url": {
-      "Description": "The HTTP API Gateway url for the created lambda",
+      "Description": "The HTTP API Gateway url for the lambda function that provides the signed upload URL",
       "Value": {
         "Fn::Sub": "https://${[CELL_ID]HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
       }
